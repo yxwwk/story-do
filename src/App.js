@@ -34,11 +34,16 @@ function App() {
     }
   ]);
   
-  const [isSnowing, setIsSnowing] = useState(true); // 雪花状态，默认为开启
+  const [isSnowing, setIsSnowing] = useState(false); // 雪花状态，默认为关闭
   
   // 切换雪花效果
   const toggleSnow = () => {
     setIsSnowing(prev => !prev);
+  };
+  
+  // 下雪完成时自动关闭开关
+  const handleSnowComplete = () => {
+    setIsSnowing(false);
   };
   
   // 切换任务完成状态
@@ -62,10 +67,10 @@ function App() {
   return (
     <div className="App">
       {/* 雪花效果组件 - 条件渲染 */}
-      {isSnowing && <SnowEffect />}
+      {isSnowing && <SnowEffect onSnowComplete={handleSnowComplete} />}
       <header className="App-header">
         {/* 雪花开关组件 */}
-          <SnowToggle isSnowing={isSnowing} onToggle={toggleSnow} />
+        <SnowToggle isSnowing={isSnowing} onToggle={toggleSnow} />
         {/* 添加标题和日期 */}
         <h1 className="app-title">我的待办事项</h1>
         <p className="app-date">{formatDate()}</p>
