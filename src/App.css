@@ -99,7 +99,9 @@
   box-shadow: 
     0 8px 24px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* 恢复平滑过渡效果，但限制在必要的属性上 */
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px solid #f0f0f0;
   width: 100%;
   box-sizing: border-box;
@@ -107,6 +109,10 @@
   overflow: hidden;
   cursor: pointer;
   user-select: none;
+  /* 固定高度和尺寸，防止选中时大小变化 */
+  min-height: auto;
+  /* 默认无transform，但在PC端hover时会覆盖 */
+  transform: none;
 }
 
 /* 未完成任务卡片样式 */
@@ -161,21 +167,25 @@
 }
 
 .todo-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.12),
-    0 4px 16px rgba(0, 0, 0, 0.08);
+  /* 默认情况下保持简单，避免移动端变化 */
+  box-shadow: inherit;
 }
 
-/* 未完成任务悬浮效果 */
-.todo-card.todo-pending:hover {
-  border-color: #61dafb;
+/* 仅在PC端恢复hover向上动效 */
+@media (min-width: 1024px) {
+  .todo-card:hover {
+    /* 恢复PC端hover时向上移动的动效，减小移动幅度 */
+    transform: translateY(-3px) !important;
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.12),
+      0 4px 16px rgba(0, 0, 0, 0.08);
+  }
 }
 
-/* 已完成任务悬浮效果 */
-.todo-card.todo-completed:hover {
-  border-color: #10b981;
-}
+/* 移除边框颜色变化，避免产生卡片移动的视觉效果 */
+/* 未完成任务悬浮效果已移除 */
+
+/* 已完成任务悬浮效果已移除 */
 
 /* 卡片头部样式 */
 .todo-card-header {
@@ -276,7 +286,8 @@
 }
 
 .todo-card:hover .todo-image {
-  transform: scale(1.05) rotate(2deg);
+  /* 移除图片悬浮时的缩放和旋转效果 */
+  transform: none;
 }
 
 .todo-text {
@@ -287,7 +298,8 @@
   margin: 0;
   flex: 1;
   letter-spacing: 0.3px;
-  transition: all 0.3s ease;
+  /* 移除all过渡效果 */
+  transition: none;
   position: relative;
 }
 
@@ -308,7 +320,8 @@
 .image-completed {
   opacity: 0.7;
   filter: grayscale(40%);
-  transform: scale(0.95);
+  /* 移除缩放效果，保持原始大小 */
+  transform: none;
   border-color: rgba(16, 185, 129, 0.3);
 }
 
@@ -411,15 +424,15 @@
     font-size: 0.5rem;
   }
   
-  /* 移动端已完成任务文本样式 */
+  /* 移动端已完成任务文本样式 - 保持与普通文本相同尺寸 */
   .text-completed {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
   
-  /* 移动端已完成任务图片样式 */
+  /* 移动端已完成任务图片样式 - 保持与普通图片相同尺寸 */
   .image-completed {
-    width: 42px;
-    height: 42px;
+    width: 45px;
+    height: 45px;
   }
   
   /* 移动端装饰线调整 */

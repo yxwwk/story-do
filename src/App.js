@@ -28,13 +28,6 @@ function App() {
       image: logo2,
       time: '3:45 PM',
       isCompleted: false // 未完成
-    },
-    { 
-      id: 4, 
-      text: '做一套题', 
-      image: logo1,
-      time: '5:00 PM',
-      isCompleted: false // 未完成
     }
   ]);
   
