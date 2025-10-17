@@ -1,9 +1,12 @@
+import React, { useState } from 'react';
 import './App.css';
 import FloatingBubble from './FloatingBubble';
+import SnowEffect from './SnowEffect';
+import SnowToggle from './SnowToggle';
+import './SnowToggle.css';
 import logo1 from './img/1.png'; // 导入logo作为示例图片
 import logo2 from './img/2.png'; // 导入logo作为示例图片
 import avatar from './img/avatar.png'; // 导入头像作为另一个示例图片
-import { useState } from 'react';
 
 function App() {
   // 定义带图片、时间和完成状态的待办事项列表
@@ -31,6 +34,13 @@ function App() {
     }
   ]);
   
+  const [isSnowing, setIsSnowing] = useState(true); // 雪花状态，默认为开启
+  
+  // 切换雪花效果
+  const toggleSnow = () => {
+    setIsSnowing(prev => !prev);
+  };
+  
   // 切换任务完成状态
   const toggleTodoStatus = (id) => {
     setTodos(todos.map(todo => 
@@ -51,7 +61,11 @@ function App() {
 
   return (
     <div className="App">
+      {/* 雪花效果组件 - 条件渲染 */}
+      {isSnowing && <SnowEffect />}
       <header className="App-header">
+        {/* 雪花开关组件 */}
+          <SnowToggle isSnowing={isSnowing} onToggle={toggleSnow} />
         {/* 添加标题和日期 */}
         <h1 className="app-title">我的待办事项</h1>
         <p className="app-date">{formatDate()}</p>

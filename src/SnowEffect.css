@@ -1,0 +1,118 @@
+/* 雪花容器样式 */
+.snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999; /* 确保雪花在最上层 */
+  overflow: hidden;
+}
+
+/* 雪花基础样式 */
+.snowflake {
+  position: absolute;
+  top: -50px; /* 增大顶部偏移以容纳表情符号 */
+  animation-name: falling;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+  text-align: center;
+  line-height: 1;
+  pointer-events: none; /* 确保雪花不会影响页面交互 */
+}
+
+/* 雪花飘落动画 */
+@keyframes falling {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 添加更多变化的雪花动画 */
+.snowflake:nth-child(3n) {
+  animation-name: falling-swing;
+}
+
+.snowflake:nth-child(4n) {
+  animation-name: falling-drift;
+}
+
+/* 为雪花添加一些随机性 */
+.snowflake {
+  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* 摇摆的飘落动画 */
+@keyframes falling-swing {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(25vh) translateX(15px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-15px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(75vh) translateX(15px) rotate(270deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 漂移的飘落动画 */
+@keyframes falling-drift {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  33% {
+    transform: translateY(33vh) translateX(20px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(66vh) translateX(-20px) rotate(240deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 767px) {
+  .snow-container {
+    /* 移动端可以略微减少雪花密度 */
+  }
+  
+  .snowflake {
+    /* 移动端雪花可以稍微小一些 */
+  }
+}

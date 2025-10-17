@@ -1,0 +1,99 @@
+/* 雪花开关容器样式 */
+.snow-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10000; /* 确保在雪花容器之上 */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+/* 开关标签样式 */
+.toggle-label {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+  cursor: pointer;
+}
+
+/* 隐藏原生复选框 */
+.toggle-checkbox {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 开关滑块样式 */
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 开关滑块内雪花图标 */
+.toggle-icon {
+  position: absolute;
+  left: 3px;
+  transition: .4s;
+  font-size: 16px;
+}
+
+/* 开关激活状态 */
+.toggle-checkbox:checked + .toggle-slider {
+  background-color: #2196F3;
+}
+
+/* 开关激活状态下雪图标位置 */
+.toggle-checkbox:checked + .toggle-slider .toggle-icon {
+  transform: translateX(24px);
+}
+
+/* 开关文本样式 */
+.toggle-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .snow-toggle {
+    top: 15px;
+    left: 15px;
+    padding: 6px 10px;
+  }
+  
+  .toggle-label {
+    width: 44px;
+    height: 22px;
+  }
+  
+  .toggle-icon {
+    font-size: 14px;
+  }
+  
+  .toggle-checkbox:checked + .toggle-slider .toggle-icon {
+    transform: translateX(22px);
+  }
+  
+  .toggle-text {
+    font-size: 12px;
+  }
+}
