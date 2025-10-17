@@ -180,6 +180,16 @@
       0 12px 32px rgba(0, 0, 0, 0.12),
       0 4px 16px rgba(0, 0, 0, 0.08);
   }
+  
+  /* 为PC端恢复图片旋转效果 */
+  .todo-card:hover .todo-image {
+    transform: scale(1.05) rotate(2deg);
+  }
+  
+  /* 已完成任务的图片也需要旋转效果 */
+  .todo-card:hover .todo-image.image-completed {
+    transform: scale(1.05) rotate(2deg);
+  }
 }
 
 /* 移除边框颜色变化，避免产生卡片移动的视觉效果 */
@@ -285,10 +295,7 @@
   transition: transform 0.3s ease;
 }
 
-.todo-card:hover .todo-image {
-  /* 移除图片悬浮时的缩放和旋转效果 */
-  transform: none;
-}
+/* 全局图片hover效果已在PC端媒体查询中定义，移动端保持无变化 */
 
 .todo-text {
   font-size: 1.1rem;
