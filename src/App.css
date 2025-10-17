@@ -17,21 +17,435 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
+  padding: 3rem 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: flex-start;
+  color: #333;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 添加背景装饰 */
+.App-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(97,218,251,0.1) 0%, rgba(255,255,255,0) 70%);
+  animation: float 15s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translate(0%, 0%) scale(1); }
+  50% { transform: translate(5%, 5%) scale(1.1); }
+  100% { transform: translate(0%, 0%) scale(1); }
+}
+
+/* 应用标题样式 */
+.app-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #2d3748;
+  text-align: center;
+  margin: 2rem 0 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 日期样式 */
+.app-date {
+  font-size: 1rem;
+  color: #718096;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.4rem 1.2rem;
+  border-radius: 30px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .App-link {
   color: #61dafb;
 }
 
+/* 卡片容器样式 */
+.todo-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  width: 90%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+}
 
+/* 待办事项卡片基础样式 */
+.todo-card {
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid #f0f0f0;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 未完成任务卡片样式 */
+.todo-card.todo-pending {
+  background: linear-gradient(145deg, #ffffff, #f0f9ff);
+  border-color: #e0f2fe;
+}
+
+/* 未完成任务装饰线 */
+.todo-card.todo-pending::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+/* 已完成任务卡片样式 */
+.todo-card.todo-completed {
+  background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+  border-color: #bbf7d0;
+}
+
+/* 已完成任务卡片装饰线 */
+.todo-card.todo-completed::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 4px;
+  height: calc(100% - 8px);
+  background: linear-gradient(135deg, #10b981, #22c55e);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* 已完成任务卡片底部装饰 */
+.todo-card.todo-completed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0) 70%);
+  border-radius: 50%;
+  transform: translate(30%, 30%);
+}
+
+.todo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* 未完成任务悬浮效果 */
+.todo-card.todo-pending:hover {
+  border-color: #61dafb;
+}
+
+/* 已完成任务悬浮效果 */
+.todo-card.todo-completed:hover {
+  border-color: #10b981;
+}
+
+/* 卡片头部样式 */
+.todo-card-header {
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* 任务状态标签样式 */
+.todo-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 1rem;
+  border-radius: 25px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 未完成状态样式 */
+.status-pending {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.05));
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.status-pending::before {
+  content: '○';
+  font-size: 0.6rem;
+  opacity: 0.8;
+}
+
+/* 已完成状态样式 */
+.status-completed {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.05));
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-completed::before {
+  content: '✓';
+  font-size: 0.6rem;
+  opacity: 0.9;
+}
+
+/* 状态标签悬浮效果 */
+.status-pending:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.1));
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.status-completed:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(34, 197, 94, 0.1));
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+.todo-card-number {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #61dafb;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(97, 218, 251, 0.1);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+
+/* 卡片内容样式 */
+.todo-card-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.2rem;
+  text-align: left;
+  padding-left: 0.5rem;
+}
+
+.todo-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  background: white;
+  padding: 0.3rem;
+  border: 1px solid #f0f0f0;
+  transition: transform 0.3s ease;
+}
+
+.todo-card:hover .todo-image {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.todo-text {
+  font-size: 1.1rem;
+  color: #2d3748;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* 未完成任务文本样式增强 */
+.todo-card.todo-pending .todo-text {
+  color: #2d3748;
+  font-weight: 500;
+}
+
+/* 已完成任务文本样式 */
+.text-completed {
+  color: #4b5563;
+  opacity: 0.8;
+  position: relative;
+}
+
+/* 已完成任务图片样式 */
+.image-completed {
+  opacity: 0.7;
+  filter: grayscale(40%);
+  transform: scale(0.95);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* 添加卡片底部时间/状态显示 */
+.todo-card-footer {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 0.5rem;
+}
+
+.todo-card-time {
+  font-size: 0.8rem;
+  color: #718096;
+  font-weight: 400;
+}
+
+/* 响应式设计 - 桌面端 */
+@media (min-width: 1024px) {
+  .todo-card-container {
+    width: 70%;
+    max-width: 800px;
+  }
+  
+  .todo-card {
+    padding: 1.5rem;
+  }
+}
+
+/* 响应式设计 - 平板端 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .todo-card-container {
+    width: 80%;
+  }
+}
+
+/* 响应式设计 - 移动端 */
+@media (max-width: 767px) {
+  .App-header {
+    padding: 4rem 1rem 2rem;
+  }
+  
+  .app-title {
+    margin-top: 1.5rem;
+  }
+  
+  .todo-card-container {
+    width: 95%;
+    gap: 0.6rem;
+  }
+  
+  .todo-card {
+    padding: 0.8rem;
+  }
+  
+  .todo-image {
+    width: 45px;
+    height: 45px;
+    padding: 0.2rem;
+  }
+  
+  .todo-text {
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+  
+  .todo-card-content {
+    gap: 0.6rem;
+  }
+  
+  .todo-card-header {
+    margin-bottom: 0.4rem;
+    margin-top: 0;
+    gap: 0.5rem;
+  }
+  
+  .todo-card-footer {
+    margin-top: 0.4rem;
+    margin-bottom: 0;
+  }
+  
+  .todo-card-number {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+  }
+  
+  .todo-card-time {
+    font-size: 0.75rem;
+  }
+  
+  /* 移动端任务状态标签样式 */
+  .todo-status {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.8rem;
+    gap: 0.3rem;
+  }
+  
+  .status-pending::before,
+  .status-completed::before {
+    font-size: 0.5rem;
+  }
+  
+  /* 移动端已完成任务文本样式 */
+  .text-completed {
+    font-size: 0.9rem;
+  }
+  
+  /* 移动端已完成任务图片样式 */
+  .image-completed {
+    width: 42px;
+    height: 42px;
+  }
+  
+  /* 移动端装饰线调整 */
+  .todo-card.todo-pending::before {
+    width: 3px;
+  }
+  
+  .todo-card.todo-completed::before {
+    width: 3px;
+    top: 3px;
+    height: calc(100% - 6px);
+    border-radius: 1.5px;
+  }
+  
+  /* 确保移动端卡片背景色正确显示在圆角内 */
+  .todo-card.todo-completed {
+    overflow: hidden;
+    border-radius: 16px;
+  }
+  
+  /* 移动端已完成卡片装饰 */
+  .todo-card.todo-completed::after {
+    width: 40px;
+    height: 40px;
+  }
+  }
 
 /* 气泡悬浮窗样式 */
 .floating-bubble {
@@ -54,28 +468,4 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-}
-
-/* 浮动和呼吸动画效果 */
-@keyframes floatAndBreathe {
-  0% {
-    transform: translateY(0) scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  25% {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-  }
-  50% {
-    transform: translateY(0) scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  75% {
-    transform: translateY(5px) scale(1.02);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
 }
