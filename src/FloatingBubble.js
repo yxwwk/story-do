@@ -4,33 +4,11 @@ import avatarImage from './img/avatar.png';
 const FloatingBubble = () => {
   // 先定义计算位置的函数，然后再在useState中使用它
   const calculatePosition = () => {
-    // 尝试找到todo-card-container元素
-    const todoContainer = document.querySelector('.todo-card-container');
-    
-    // 对于H5移动端，恢复到右上角
-    if (window.innerWidth <= 768) {
-      return {
-        top: 20,
-        left: window.innerWidth - 100 // 考虑气泡宽度80px和一些边距
-      };
-    }
-    
-    // PC端的默认位置
-    let defaultTop = 20; // 更靠上的位置
-    let defaultLeft = 20;
-    
-    // 如果找到了todo容器，基于它的位置计算
-    if (todoContainer) {
-      const containerRect = todoContainer.getBoundingClientRect();
-      // 放在todo容器右侧，留出一些间距
-      defaultLeft = containerRect.right + 40;
-      // 更靠上的位置，而不是居中
-      defaultTop = containerRect.top; // 与todo容器顶部对齐
-    }
-    
+    // 始终将气泡放在右上角
     return {
-      top: defaultTop,
-      left: defaultLeft
+      top: 20,
+      right: 20, // 使用right而不是left来确保在右上角
+      left: 'auto' // 覆盖可能的left设置
     };
   };
   
@@ -346,7 +324,8 @@ const FloatingBubble = () => {
       style={{
         position: 'fixed',
         top: `${position.top}px`,
-        left: `${position.left}px`,
+        right: position.right,
+        left: position.left,
         width: '80px',
         height: '80px',
         backgroundColor: '#ffffff', // 更适合头像的背景色

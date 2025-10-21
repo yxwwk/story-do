@@ -1,5 +1,24 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+}
+
+/* 页面基础样式 */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Home页面特定样式 */
+.home-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 }
 
 .App-logo {
@@ -19,28 +38,17 @@
 .App-header {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-  padding: 3rem 1rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  color: #333;
-  position: relative;
-  overflow: hidden;
+
+  width: 100%;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+  overflow-x: hidden;
+    position: relative;
 }
 
 /* 添加背景装饰 */
-.App-header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(97,218,251,0.1) 0%, rgba(255,255,255,0) 70%);
-  animation: float 15s ease-in-out infinite;
-}
+
 
 @keyframes float {
   0% { transform: translate(0%, 0%) scale(1); }
@@ -85,17 +93,20 @@
 .todo-card-container {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  gap: 2rem; /* 增加卡片间距 */
   width: 90%;
   max-width: 700px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem 1rem;
+  /* 确保容器有足够的空间 */
+  min-height: 60vh;
+  flex: 1;
 }
 
 /* 待办事项卡片基础样式 */
 .todo-card {
   border-radius: 16px;
-  padding: 1.2rem;
+  padding: 1.5rem; /* 进一步增加内边距 */
   box-shadow: 
     0 8px 24px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.05);
@@ -106,11 +117,15 @@
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* 允许内容完整显示 */
   cursor: pointer;
   user-select: none;
-  /* 固定高度和尺寸，防止选中时大小变化 */
-  min-height: auto;
+  /* 确保卡片有足够的高度 */
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  /* 确保内容不会被压缩 */
+  flex-shrink: 0;
   /* 默认无transform，但在PC端hover时会覆盖 */
   transform: none;
 }
@@ -277,9 +292,11 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.5rem; /* 增加内容间距 */
   text-align: left;
   padding-left: 0.5rem;
+  flex: 1; /* 允许内容区域占据剩余空间 */
+  margin: 1rem 0; /* 增加与上下元素的间距 */
 }
 
 .todo-image {
@@ -368,7 +385,7 @@
 /* 响应式设计 - 移动端 */
 @media (max-width: 767px) {
   .App-header {
-    padding: 4rem 1rem 2rem;
+    padding: 3rem 1rem 2rem;
   }
   
   .app-title {
@@ -377,26 +394,27 @@
   
   .todo-card-container {
     width: 95%;
-    gap: 0.6rem;
+    gap: 1.2rem; /* 增加卡片间距 */
   }
   
   .todo-card {
-    padding: 0.8rem;
+    padding: 1.2rem; /* 增加卡片内边距 */
+    min-height: 120px; /* 确保最小高度 */
   }
   
   .todo-image {
-    width: 45px;
-    height: 45px;
-    padding: 0.2rem;
+    width: 55px;
+    height: 55px;
+    padding: 0.3rem;
   }
   
   .todo-text {
-    font-size: 0.95rem;
-    line-height: 1.2;
+    font-size: 1rem;
+    line-height: 1.4; /* 增加行高，提高可读性 */
   }
   
   .todo-card-content {
-    gap: 0.6rem;
+    gap: 1rem; /* 增加内容间距 */
   }
   
   .todo-card-header {

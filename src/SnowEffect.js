@@ -62,7 +62,7 @@ const SnowEffect = ({ onSnowComplete }) => {
       clearInterval(interval);
       
       // 结冰后立即开始让雪花逐渐消失（更缓慢的交错消失效果）
-      setTimeout(() => {
+        setTimeout(() => {
         if (snowContainerRef.current) {
           // 获取所有现有的雪花
           const allSnowflakes = snowContainerRef.current.querySelectorAll('.snowflake');
@@ -91,7 +91,7 @@ const SnowEffect = ({ onSnowComplete }) => {
             }, randomDelay);
           });
         }
-      }, 1000);
+      }, 0);
       
       // 冰冻效果持续6秒后自动消失（延长持续时间）
       const unfreezeTimeout = setTimeout(() => {

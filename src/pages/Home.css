@@ -1,0 +1,815 @@
+.task-flow-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #f9fafb;
+}
+
+.task-flow {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* 连接线容器 */
+.connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 连接线样式 */
+.connection-line {
+  position: absolute;
+  height: 3px;
+  background-color: #cbd5e1;
+  transform-origin: left center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1.5px;
+  background: #cbd5e1;
+  /* 使用伪元素实现箭头和起点 */
+}
+
+/* 连接线流动效果 - 使用背景渐变动画实现 */
+.connection-line {
+  background-image: 
+    linear-gradient(90deg, #cbd5e1, #cbd5e1),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  background-size: 100% 100%, 30% 100%;
+  background-repeat: no-repeat;
+  background-position: 0 0, -100% 0;
+  animation: flow 0s infinite linear;
+  animation-play-state: paused;
+}
+
+.task-card:hover ~ .connections .connection-line {
+  animation-play-state: running;
+  animation-duration: 3s;
+}
+
+/* 流动动画 */
+@keyframes flow {
+  0% {
+    background-position: 0 0, -100% 0;
+  }
+  100% {
+    background-position: 0 0, 400% 0;
+  }
+}
+
+/* 已完成任务的连接线 */
+.connection-completed {
+  height: 4px;
+  background-image: 
+    linear-gradient(90deg, #22c55e, #10b981),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+  animation-play-state: running;
+  animation-duration: 2s;
+}
+
+/* 当鼠标悬停在任务卡片上时，相关连接线高亮 */
+.task-card:hover ~ .connections .connection-line {
+  opacity: 1;
+  height: 4px;
+  background-image: 
+    linear-gradient(90deg, #94a3b8, #94a3b8),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+/* 连接线端点样式 - 箭头效果 */
+.connection-line::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background-color: #cbd5e1;
+  border-radius: 2px;
+  box-shadow: 2px -2px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.connection-completed::after {
+  background-color: #10b981;
+  box-shadow: 2px -2px 0 rgba(34, 197, 94, 0.3);
+}
+
+/* 连接线起点样式 */
+.connection-line::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.connection-completed::before {
+  background-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+}
+
+/* 成功页面样式 */
+.success-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* 烟花效果 */
+.firework {
+  position: absolute;
+  border-radius: 50%;
+  transform-origin: center;
+  animation: firework-burst 1s ease-out forwards;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  pointer-events: none;
+}
+
+@keyframes firework-burst {
+  0% {
+    transform: scale(0.1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.success-container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  animation: success-appear 0.6s ease-out;
+}
+
+@keyframes success-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.success-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 30px;
+  animation: title-pop 0.8s ease-out;
+}
+
+@keyframes title-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-emoji {
+  font-size: 48px;
+  display: block;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.success-icon {
+  margin: 20px auto;
+  animation: icon-pulse 2s infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* 统计信息样式 */
+.success-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+  gap: 30px;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #e2e8f0;
+}
+
+.completed-tasks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+  padding: 15px;
+  background-color: #f8fafc;
+  border-radius: 15px;
+}
+
+.mini-task-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  width: 70px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mini-task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mini-task-image {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.mini-task-text {
+  font-size: 12px;
+  color: #475569;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.completion-check {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: check-appear 0.5s ease-out;
+}
+
+@keyframes check-appear {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 按钮区域 */
+.success-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.restart-button, .share-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.restart-button.primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.restart-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.restart-button.primary:active {
+  transform: translateY(0);
+}
+
+.share-button {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 2px solid #e2e8f0;
+}
+
+.share-button:hover {
+  background-color: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .success-container {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+  
+  .success-title {
+    font-size: 24px;
+  }
+  
+  .success-emoji {
+    font-size: 40px;
+  }
+  
+  .success-stats {
+    gap: 20px;
+  }
+  
+  .stat-number {
+    font-size: 28px;
+  }
+  
+  .success-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .restart-button, .share-button {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .success-container {
+    padding: 25px 15px;
+  }
+  
+  .success-title {
+    font-size: 20px;
+  }
+  
+  .success-emoji {
+    font-size: 36px;
+  }
+  
+  .success-icon svg {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .success-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .stat-divider {
+    width: 40px;
+    height: 1px;
+  }
+  
+  .mini-task-card {
+    width: 60px;
+  }
+  
+  .restart-button, .share-button {
+    width: 180px;
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+/* 任务卡片容器 */
+.tasks {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* 任务卡片样式 */
+.task-card {
+  position: absolute;
+  width: 150px;
+  background-color: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: grab;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  overflow: hidden;
+}
+
+.task-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #3b82f6, #60a5fa);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  border-color: #93c5fd;
+}
+
+.task-card:hover::before {
+  opacity: 1;
+}
+
+/* 已完成任务卡片 */
+.task-completed {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+  background: linear-gradient(145deg, #f0fdf4, #ffffff);
+  animation: taskComplete 0.6s ease;
+}
+
+.task-completed::before {
+  background: linear-gradient(to bottom, #22c55e, #4ade80);
+  opacity: 1;
+}
+
+/* 任务完成动画 */
+@keyframes taskComplete {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 拖拽中的任务卡片 */
+.task-card.dragging {
+  cursor: grabbing;
+  transform: scale(1.08);
+  z-index: 10 !important;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border-color: #3b82f6;
+  background: linear-gradient(145deg, #eff6ff, #ffffff);
+}
+
+/* 点击效果 */
+.task-card:active:not(.dragging) {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* 任务图片区域 */
+.task-image {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 15px;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.task-card:hover .task-image {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+/* 山脉图标容器 */
+.mountain-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 未完成任务的图标样式 */
+.task-card:not(.task-completed) .mountain-icon svg polygon:first-child {
+  fill: #3b82f6;
+  transition: fill 0.3s ease;
+}
+
+.task-card:not(.task-completed) .mountain-icon svg polygon:last-child {
+  fill: #60a5fa;
+  transition: fill 0.3s ease;
+}
+
+.task-card:hover:not(.task-completed) .mountain-icon svg polygon:first-child {
+  fill: #2563eb;
+}
+
+.task-card:hover:not(.task-completed) .mountain-icon svg polygon:last-child {
+  fill: #93c5fd;
+}
+
+/* 已完成任务的图标样式 */
+.task-completed .mountain-icon svg polygon:first-child {
+  fill: #22c55e;
+}
+
+.task-completed .mountain-icon svg polygon:last-child {
+  fill: #4ade80;
+}
+
+/* 完成勾选标记 */
+.completion-check {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background-color: white;
+  border-radius: 50%;
+  padding: 3px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  animation: checkAppear 0.4s ease-out;
+  border: 2px solid #22c55e;
+}
+
+/* 完成标记出现动画 */
+@keyframes checkAppear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 任务文本 */
+.task-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0 4px;
+}
+
+.task-card:hover .task-text {
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.task-completed .task-text {
+  color: #22c55e;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #22c55e;
+  text-decoration-style: solid;
+}
+
+/* 响应式布局 - 超大屏幕 */
+@media (min-width: 1280px) {
+  .task-flow {
+    height: 700px;
+    max-width: 1400px;
+  }
+  
+  .task-card {
+    width: 160px;
+    padding: 20px;
+  }
+  
+  .task-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+  }
+  
+  .task-text {
+    font-size: 15px;
+  }
+}
+
+/* 响应式布局 - 大屏幕 */
+@media (max-width: 1279px) {
+  .task-flow {
+    height: 600px;
+  }
+}
+
+/* 响应式布局 - 平板横屏 */
+@media (max-width: 1024px) {
+  .task-flow {
+    height: 500px;
+  }
+  
+  .task-card {
+    width: 130px;
+    padding: 15px;
+  }
+  
+  .task-image {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+  }
+  
+  /* 连接线在平板上的调整 */
+  .connection-line {
+    height: 2.5px;
+  }
+  
+  .connection-completed {
+    height: 3.5px;
+  }
+}
+
+/* 响应式布局 - 平板竖屏 */
+@media (max-width: 768px) {
+  .task-flow-container {
+    padding: 20px 15px;
+  }
+  
+  .task-flow {
+    height: 450px;
+    border-radius: 8px;
+  }
+  
+  .task-card {
+    width: 110px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .task-image {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+  }
+  
+  .task-text {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  
+  /* 连接线在平板竖屏上的调整 */
+  .connection-line {
+    height: 2px;
+  }
+  
+  .connection-completed {
+    height: 3px;
+  }
+  
+  .connection-line::before {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .connection-line::after {
+    width: 8px;
+    height: 8px;
+    right: -5px;
+  }
+}
+
+/* 响应式布局 - 手机 */
+@media (max-width: 480px) {
+  .task-flow-container {
+    padding: 15px 10px;
+  }
+  
+  .task-flow {
+    height: 400px;
+  }
+  
+  .task-card {
+    width: 90px;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .task-image {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+  }
+  
+  .task-text {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  
+  /* 连接线在手机上的调整 */
+  .connection-line {
+    height: 2px;
+  }
+  
+  .connection-completed {
+    height: 2.5px;
+  }
+  
+  .connection-line::before {
+    width: 8px;
+    height: 8px;
+    left: -4px;
+  }
+  
+  .connection-line::after {
+    width: 6px;
+    height: 6px;
+    right: -3px;
+  }
+}
+
+/* 响应式布局 - 小屏幕手机 */
+@media (max-width: 360px) {
+  .task-flow {
+    height: 350px;
+  }
+  
+  .task-card {
+    width: 80px;
+    padding: 8px;
+  }
+  
+  .task-image {
+    width: 35px;
+    height: 35px;
+    margin-bottom: 4px;
+  }
+  
+  .task-text {
+    font-size: 10px;
+  }
+}
