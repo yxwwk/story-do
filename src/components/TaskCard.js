@@ -1,26 +1,38 @@
 import React from 'react';
 
-const TaskCard = ({ task, onDragStart, onDragOver, onDragEnd, onDrop, onClick }) => {
-  // 生成任务颜色
-  const getTaskColor = (index) => {
-    const colors = ['#3b82f6', '#22c55e', '#f97316', '#8b5cf6', '#ec4899'];
-    return colors[index % colors.length];
+const TaskCard = ({ task, index, taskCount, dragState, toggleTaskCompletion, handleDragStart }) => {
+  const getTaskColor = (taskId) => {
+    // 根据任务ID生成一致的颜色
+    const colors = ['#4F46E5', '#EC4899', '#10B981', '#F59E0B', '#8B5CF6', '#6366F1'];
+    return colors[taskId % colors.length];
   };
-
+  
+  // 根据索引和任务数量计算位置
+  const getPosition = () => {
+    // 默认网格布局
+    return {
+      x: 100 + (index % 3) * 220,
+      y: 100 + Math.floor(index / 3) * 180
+    };
+  };
+  
+  const position = getPosition();
+  
   return (
-    <div
-      className={`task-card ${task.isCompleted ? 'task-completed' : ''}`}
+    <div 
+      key={task.id}
+      id={task.id}
+      className={`task-card ${task.isCompleted ? 'task-completed' : ''} ${dragState.isDragging && dragState.taskId === task.id ? 'dragging' : ''}`}
       draggable
-      onDragStart={(e) => onDragStart(e, task)}
-      onDragOver={(e) => onDragOver(e, task)}
-      onDragEnd={onDragEnd}
-      onDrop={(e) => onDrop(e, task)}
-      onClick={() => onClick(task)}
+      onDragStart={() => handleDragStart(task.id)}
+      onClick={() => toggleTaskCompletion(task)}
       style={{
-        borderLeftColor: getTaskColor(task.id),
-        backgroundColor: task.isCompleted ? '#f0fdf4' : '#ffffff'
-      }}
-    >
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        borderColor: getTaskColor(task.id),
+        cursor: dragState.isDragging && dragState.taskId === task.id ? 'grabbing' : 'grab'
+      }}>
+
       <div className="task-image-container">
         <div className="task-image">
           <svg viewBox="0 0 40 30" width="40" height="30">

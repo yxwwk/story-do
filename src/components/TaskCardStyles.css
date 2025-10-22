@@ -1,0 +1,494 @@
+/* TaskCard2 样式 */
+.task-card-2 {
+  color: white;
+  border-radius: 12px;
+  padding: 16px;
+  width: 150px;
+  height: 120px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.task-card-2:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.task-card-2 .task-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-card-2 .task-number {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.task-card-2 .task-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.task-card-2 .task-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.task-card-2 .completion-badge {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  align-self: flex-start;
+}
+
+.task-card-2 .task-footer {
+  display: flex;
+  justify-content: flex-end;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* TaskCard3 样式 */
+.task-card-3 {
+  background: white;
+  border: 2px solid #6366f1;
+  border-radius: 16px;
+  padding: 20px;
+  width: 150px;
+  height: 120px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.task-card-3:hover {
+  border-color: #818cf8;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+.task-card-3 .task-circle-icon {
+  margin-bottom: 10px;
+}
+
+.task-card-3 .task-title {
+  font-size: 12px;
+  color: #6366f1;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.task-card-3 .task-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.task-card-3.task-completed {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+/* TaskCard4 样式 */
+.task-card-4 {
+  width: 150px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-card-4 .task-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  border-radius: 20px;
+  padding: 16px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+  transition: all 0.3s ease;
+}
+
+.task-card-4:hover .task-bubble {
+  transform: scale(1.05);
+}
+
+.task-card-4 .task-priority {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.task-card-4 .task-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.task-card-4 .task-status {
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+.task-card-4 .status-completed {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.task-card-4 .status-pending {
+  color: #f97316;
+  font-weight: 500;
+}
+
+.task-card-4 .task-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ff9a9e;
+}
+
+/* TaskCard5 样式 */
+.task-card-5 {
+  width: 150px;
+  height: 120px;
+}
+
+.task-card-5 .task-rectangle {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.task-card-5:hover .task-rectangle {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.task-card-5 .task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.task-card-5 .task-id {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.task-card-5 .task-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6b7280;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-card-5 .checkbox-checked {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.task-card-5 .task-content {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.task-card-5 .task-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.task-card-5 .task-footer {
+  padding: 6px 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.task-card-5 .task-timestamp {
+  font-size: 9px;
+  color: #9ca3af;
+}
+
+/* TaskCard6 样式 */
+.task-card-6 {
+  width: 150px;
+  height: 120px;
+}
+
+.task-card-6 .task-card-modern {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card-6:hover .task-card-modern {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(168, 237, 234, 0.4);
+}
+
+.task-card-6 .task-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #6366f1;
+}
+
+.task-card-6 .task-indicator.completed {
+  background: #22c55e;
+}
+
+.task-card-6 .task-modern-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.task-card-6 .task-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.task-card-6 .task-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.task-card-6 .task-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+}
+
+.task-card-6 .progress-bar {
+  height: 100%;
+  background: #22c55e;
+  transition: width 0.3s ease;
+}
+
+.task-card-6 .progress-bar.100% {
+  width: 100%;
+}
+
+.task-card-6 .progress-bar.0% {
+  width: 0%;
+}
+
+/* TaskCard7 样式 */
+.task-card-7 {
+  width: 150px;
+  height: 120px;
+  transform: rotate(-2deg);
+  transition: all 0.3s ease;
+}
+
+.task-card-7:hover {
+  transform: rotate(0deg) scale(1.05);
+}
+
+.task-card-7 .task-note {
+  background: #fffacd;
+  border: 1px solid #f7e8a4;
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px 12px 12px 12px;
+}
+
+.task-card-7 .note-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.task-card-7 .note-pin {
+  width: 20px;
+  height: 12px;
+  background: #78350f;
+  border-radius: 50% 50% 0 0;
+}
+
+.task-card-7 .note-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.task-card-7 .task-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.task-card-7 .note-status {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 10px;
+  align-self: center;
+}
+
+.task-card-7 .note-status.pending {
+  background: #fde68a;
+  color: #92400e;
+}
+
+.task-card-7 .note-status.completed {
+  background: #a7f3d0;
+  color: #065f46;
+}
+
+.task-card-7 .note-footer {
+  display: flex;
+  justify-content: center;
+  opacity: 0.5;
+}
+
+/* TaskCard8 样式 */
+.task-card-8 {
+  width: 150px;
+  height: 120px;
+}
+
+.task-card-8 .task-card-glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.task-card-8:hover .task-card-glass {
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+.task-card-8 .glass-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-card-8 .task-number {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #4338ca;
+}
+
+.task-card-8 .glass-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.task-card-8 .task-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e1b4b;
+  text-align: center;
+}
+
+.task-card-8 .glass-check {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.task-card-8 .glass-footer {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.task-card-8 .footer-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+
+/* 拖拽状态样式 */
+.task-card.dragging {
+  transform: scale(1.05);
+  z-index: 10;
+  cursor: grabbing !important;
+  opacity: 0.9;
+}
+
+/* 完成状态的通用样式增强 */
+.task-card.task-completed {
+  animation: completePulse 0.5s ease;
+}
+
+@keyframes completePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
