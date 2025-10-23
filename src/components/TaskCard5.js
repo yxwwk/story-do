@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, handleDragStart }) => {
+const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, handleDragStart, tasks }) => {
   // 定义位置数据，使其在整个组件中可用
   const positions = {
     5: [
@@ -208,6 +208,24 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   // 计算任务完成百分比
   const completionPercentage = task.isCompleted || false ? 100 : 0;
   
+  // 状态管理：控制故事章节弹窗的显示
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // 处理卡片点击事件
+  const handleCardClick = (event) => {
+    // 无论任务是否锁定，都打开故事章节弹窗
+    setIsModalOpen(true);
+  };
+  
+  // 检查任务是否被锁定
+  const isTaskLocked = () => {
+    // 如果不是第一个任务，检查前一个任务是否已完成
+    if (index > 0 && tasks && tasks[index - 1]) {
+      return !tasks[index - 1].isCompleted;
+    }
+    return false;
+  };
+  
   // 为不同任务分配不同的网络图片
   const getTaskImage = () => {
     return `https://picsum.photos/id/${52 + (index % 10)}/800/600`;
@@ -227,11 +245,13 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           top: `${position.y}px`,
           cursor: dragState.isDragging && dragState.taskId === task.id ? 'grabbing' : 'grab',
           zIndex: 5,
-          backgroundColor: '#ffffff',
+          backgroundColor: isTaskLocked() ? '#f3f4f6' : '#ffffff',
           borderRadius: '16px',
-          boxShadow: (task.isCompleted || false) 
-            ? '0 8px 20px rgba(16, 185, 129, 0.15)' 
-            : '0 8px 20px rgba(249, 115, 22, 0.15)', // 橙色主题阴影
+          boxShadow: isTaskLocked() 
+            ? '0 8px 20px rgba(0, 0, 0, 0.05)' 
+            : (task.isCompleted || false) 
+              ? '0 8px 20px rgba(16, 185, 129, 0.15)' 
+              : '0 8px 20px rgba(249, 115, 22, 0.15)', // 橙色主题阴影
           border: `1px solid ${(task.isCompleted || false) ? '#d1fae5' : '#fed7aa'}`,
           width: '260px', // 缩小宽度
           height: '120px', // 相应减小高度
@@ -241,7 +261,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: dragState.isDragging && dragState.taskId === task.id ? 'scale(1.03) rotate(1deg)' : 'scale(1)',
         }}
-        onClick={(event) => toggleTaskCompletion(task.id, event)}
+        onClick={(event) => handleCardClick(event)}
         onMouseDown={(event) => handleDragStart(task.id, event)}
         onTouchStart={(event) => handleDragStart(task.id, event.touches[0])}
       >
@@ -276,7 +296,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
               position: 'absolute',
               left: 0,
               top: 0,
-              backgroundColor: (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
+              backgroundColor: isTaskLocked() ? '#9ca3af' : (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
             }}
           />
         </div>
@@ -300,7 +320,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
             <div className="task-number" style={{
               fontSize: '10px', // 减小字体大小
               fontWeight: '600',
-              color: (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
+              color: isTaskLocked() ? '#9ca3af' : (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
             }}>
@@ -324,7 +344,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           <div className="task-text" style={{
               fontSize: '14px', // 减小字体大小
               fontWeight: '700',
-              color: '#111827',
+              color: isTaskLocked() ? '#9ca3af' : '#111827',
               textAlign: 'left',
               lineHeight: '1.3',
               marginBottom: 'auto', // 自动填充中间空间
@@ -355,7 +375,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
                 style={{
                   width: `${completionPercentage}%`,
                   height: '100%',
-                  backgroundColor: task.isCompleted ? '#10b981' : '#f97316', // 橙色主题
+                  backgroundColor: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? '#10b981' : '#f97316'), // 橙色主题
                   borderRadius: '4px',
                   transition: 'width 0.5s ease',
                 }}
@@ -373,6 +393,221 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           </div>
         </div>
       </div>
+      
+      {/* 故事章节风格弹窗 */}
+      {isModalOpen && (
+        <div 
+          className="story-modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            animation: 'fadeIn 0.3s ease-in-out',
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          {/* 装饰卷轴效果 */}
+          <div
+            className="story-scroll"
+            style={{
+              position: 'absolute',
+              width: '500px',
+              height: '650px',
+              background: 'repeating-linear-gradient(#d4a55e, #d4a55e 2px, #e8c07d 2px, #e8c07d 10px)',
+              borderRadius: '12px',
+              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3)',
+              transform: 'rotate(-2deg) scale(1.1)',
+              zIndex: 1,
+            }}
+          />
+          
+          <div
+            className="story-modal"
+            style={{
+              position: 'relative',
+              width: '450px',
+              maxHeight: '600px',
+              backgroundColor: '#f8f3e8',
+              borderRadius: '12px',
+              padding: '40px 35px',
+              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3)',
+              zIndex: 2,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif',
+              overflowY: 'auto',
+              animation: 'slideIn 0.4s ease-out',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 章节标题 */}
+            <div className="story-chapter-title" style={{
+              fontSize: '22px',
+              fontWeight: '700',
+              color: '#8b4513',
+              textAlign: 'center',
+              marginBottom: '25px',
+              paddingBottom: '15px',
+              borderBottom: '2px solid #d4a55e',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+            }}>
+              故事章节 {index + 1}
+            </div>
+            
+            {/* 故事内容 */}
+            <div className="story-content" style={{
+              fontSize: '18px',
+              lineHeight: '1.8',
+              color: '#5a402a',
+              textAlign: 'justify',
+              marginBottom: '30px',
+            }}>
+              {/* 优先使用task.levelPlot作为故事内容，如果不存在则使用默认文本 */}
+              {task && task.levelPlot ? (
+                <p>{task.levelPlot}</p>
+              ) : (
+                <p>这是一段神奇的冒险故事。完成任务，解锁更多精彩内容！</p>
+              )}
+            </div>
+            
+            {/* 任务信息卡片 */}
+            <div className="task-info-card" style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              borderRadius: '8px',
+              padding: '15px',
+              marginBottom: '20px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #d4a55e',
+            }}>
+              <div className="task-info-title" style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#8b4513',
+                marginBottom: '12px',
+              }}>
+                任务详情
+              </div>
+              <div className="task-info-text" style={{
+                fontSize: '16px',
+                color: '#5a402a',
+                lineHeight: '1.6',
+              }}>
+                {task.text}
+              </div>
+            </div>
+            
+            {/* 任务状态 */}
+            <div className="task-status" style={{
+              fontSize: '16px',
+              color: '#8b4513',
+              textAlign: 'center',
+              marginBottom: '30px',
+              padding: '12px',
+              backgroundColor: 'rgba(212, 165, 94, 0.1)',
+              borderRadius: '6px',
+            }}>
+              {isTaskLocked() ? (
+                <span>此任务已锁定，请先完成前置任务</span>
+              ) : (
+                <span>任务已解锁，准备好接受挑战了吗？</span>
+              )}
+            </div>
+            
+            {/* 底部按钮 */}
+            <div className="modal-footer" style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '10px',
+              flexWrap: 'wrap',
+            }}>
+              {!isTaskLocked() && (
+                <button
+                  className="complete-task-btn"
+                  style={{
+                  padding: '12px 24px',
+                  backgroundColor: task.isCompleted ? '#ef4444' : '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: task.isCompleted 
+                    ? '0 2px 6px rgba(239, 68, 68, 0.3)'
+                    : '0 2px 6px rgba(16, 185, 129, 0.3)',
+                }}
+                  onClick={() => {
+                    toggleTaskCompletion(task.id);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = task.isCompleted ? '#dc2626' : '#059669';
+                    e.target.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = task.isCompleted ? '#ef4444' : '#10b981';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {task.isCompleted ? '标记为未完成' : '标记为已完成'}
+                </button>
+              )}
+              <button
+                className="close-modal-btn"
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#8b4513',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 2px 6px rgba(139, 69, 19, 0.3)',
+                }}
+                onClick={() => setIsModalOpen(false)}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#a0522d';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#8b4513';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+           关闭卷轴
+              </button>
+            </div>
+            
+            {/* 装饰元素 */}
+            <div className="decorative-seal" style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(212, 165, 94, 0.2)',
+              border: '2px solid #d4a55e',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: '#8b4513',
+              fontSize: '18px',
+              fontWeight: '700',
+            }}>
+              {index + 1}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

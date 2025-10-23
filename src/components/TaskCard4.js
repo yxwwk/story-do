@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, handleDragStart }) => {
+const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, handleDragStart, tasks }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // 处理卡片点击事件
+  const handleCardClick = (event) => {
+    event.stopPropagation();
+    setIsModalOpen(true); // 打开弹窗显示故事内容
+  };
+  
+  // 检查任务是否被锁定（前置任务未完成）
+  const isTaskLocked = () => {
+    // 如果不是第一个任务，检查前一个任务是否已完成
+    if (index > 0 && tasks && tasks.length > index) {
+      const previousTask = tasks[index - 1];
+      return !previousTask.isCompleted;
+    }
+    return false;
+  };
+
+  // 处理任务完成状态切换
+  const handleToggleCompletion = (event) => {
+    event.stopPropagation();
+    // 如果任务被锁定，不执行状态切换
+    if (!isTaskLocked()) {
+      toggleTaskCompletion(task.id);
+    }
+  };
   // 定义位置数据，使其在整个组件中可用
   const positions = {
     4: [
@@ -210,7 +236,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: dragState.isDragging && dragState.taskId === task.id ? 'scale(1.03) rotate(1deg)' : 'scale(1)',
         }}
-        onClick={(event) => toggleTaskCompletion(task.id, event)}
+        onClick={handleCardClick}
         onMouseDown={(event) => handleDragStart(task.id, event)}
         onTouchStart={(event) => handleDragStart(task.id, event.touches[0])}
       >
@@ -245,8 +271,8 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
               position: 'absolute',
               left: 0,
               top: 0,
-              backgroundColor: (task.isCompleted || false) ? '#10b981' : '#8b5cf6', // 紫色主题
-            }}
+              backgroundColor: (task.isCompleted || false) ? '#10b981' : isTaskLocked() ? '#9ca3af' : '#8b5cf6', // 紫色主题，锁定时显示灰色
+              }}
           />
         </div>
         
@@ -283,7 +309,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
                 width: '8px',
               height: '8px', // 减小状态指示器大小
                 borderRadius: '50%',
-                backgroundColor: (task.isCompleted || false) ? '#10b981' : '#8b5cf6', // 紫色主题
+                backgroundColor: (task.isCompleted || false) ? '#10b981' : isTaskLocked() ? '#9ca3af' : '#8b5cf6', // 紫色主题，锁定时显示灰色
                 boxShadow: `0 0 0 3px rgba(139, 92, 246, 0.1)`,
               }}
             />
@@ -293,7 +319,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           <div className="task-text" style={{
               fontSize: '14px', // 减小字体大小
               fontWeight: '700',
-              color: '#111827',
+              color: (task.isCompleted || false) ? '#10b981' : isTaskLocked() ? '#9ca3af' : '#111827',
               textAlign: 'left',
               lineHeight: '1.3',
               marginBottom: 'auto', // 自动填充中间空间
@@ -324,7 +350,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
                 style={{
                   width: `${completionPercentage}%`,
                   height: '100%',
-                  backgroundColor: task.isCompleted ? '#10b981' : '#8b5cf6', // 紫色主题
+                  backgroundColor: task.isCompleted ? '#10b981' : isTaskLocked() ? '#9ca3af' : '#8b5cf6', // 紫色主题，锁定时显示灰色
                   borderRadius: '4px',
                   transition: 'width 0.5s ease',
                 }}
@@ -342,6 +368,199 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           </div>
         </div>
       </div>
+
+      {/* 故事章节风格弹窗 */}
+      {isModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#f8f3e6',
+              borderRadius: '16px',
+              padding: '40px',
+              maxWidth: '600px',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+              backgroundImage: 'url("https://www.transparenttextures.com/patterns/old-paper.png")',
+              minWidth: '500px',
+              position: 'relative',
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* 装饰性卷轴顶部 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '20px',
+              background: 'linear-gradient(to bottom, #d4a76a, #f8f3e6)',
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px',
+            }} />
+            
+            {/* 装饰性卷轴底部 */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '20px',
+              background: 'linear-gradient(to top, #d4a76a, #f8f3e6)',
+              borderBottomLeftRadius: '16px',
+              borderBottomRightRadius: '16px',
+            }} />
+            
+            {/* 章节装饰线 */}
+            <div style={{
+              width: '100%',
+              height: '2px',
+              background: 'linear-gradient(to right, transparent, #8b4513, transparent)',
+              marginBottom: '20px',
+            }} />
+            
+            {/* 故事标题 */}
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: '700',
+              color: '#4a3c31',
+              textAlign: 'center',
+              marginBottom: '24px',
+              fontFamily: '"Georgia", "Times New Roman", serif',
+            }}>
+              {task.text}
+            </h2>
+            
+            {/* 故事内容 */}
+            <div style={{
+              fontSize: '18px',
+              lineHeight: '1.8',
+              color: '#4a3c31',
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              textIndent: '2em',
+              padding: '10px',
+            }}>
+              {task.levelPlot || '这个任务还没有故事内容。'}
+            </div>
+            
+            {/* 任务状态卡片 */}
+            <div style={{
+              marginTop: '24px',
+              padding: '16px',
+              backgroundColor: 'rgba(212, 200, 161, 0.2)',
+              borderRadius: '12px',
+              border: '1px solid #d4c8a1',
+            }}>
+              <div style={{
+                fontSize: '14px',
+                color: '#8b4513',
+                fontWeight: '600',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+              }}>
+                <span style={{
+                  display: 'inline-block',
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  backgroundColor: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? '#8b4513' : '#cd5c5c'),
+                  marginRight: '8px',
+                }} />
+                任务状态: {isTaskLocked() ? '已锁定' : (task.isCompleted ? '已完成' : '未完成')}
+                {isTaskLocked() && (
+                  <span style={{
+                    marginLeft: '8px',
+                    color: '#9ca3af',
+                    fontSize: '12px',
+                    fontStyle: 'italic',
+                  }}>
+                    (请先完成前置任务)
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            {/* 底部操作按钮 */}
+            <div style={{
+              marginTop: '32px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <button
+                onClick={handleToggleCompletion}
+                style={{
+                  backgroundColor: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? '#cd5c5c' : '#8b4513'),
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: isTaskLocked() ? 'not-allowed' : 'pointer',
+                  fontFamily: '"Georgia", "Times New Roman", serif',
+                  transition: 'all 0.3s ease',
+                  opacity: isTaskLocked() ? 0.7 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isTaskLocked()) {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(139, 69, 19, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isTaskLocked()) {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = 'none';
+                  }
+                }}
+              >
+                {isTaskLocked() ? '任务已锁定' : (task.isCompleted ? '标记为未完成' : '标记为已完成')}
+              </button>
+              
+              <button
+                onClick={() => setIsModalOpen(false)}
+                style={{
+                  backgroundColor: 'transparent',
+                  color: '#8b4513',
+                  border: '1px solid #8b4513',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  fontFamily: '"Georgia", "Times New Roman", serif',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(139, 69, 19, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                }}
+              >
+                关闭卷轴
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

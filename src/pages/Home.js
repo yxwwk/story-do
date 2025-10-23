@@ -14,24 +14,47 @@ import TaskCard5 from '../components/TaskCard5';
 import TaskCard6 from '../components/TaskCard6';
 import TaskCard7 from '../components/TaskCard7';
 import TaskCard8 from '../components/TaskCard8';
+import { CozeAPI, ChatEventType, RoleType } from '@coze/api';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+
 
 const Home = () => {
   const [isSnowing, setIsSnowing] = useState(false); // 雪花状态，默认为关闭
-
+  const cozeRef = useRef(null); // 扣子实例
+  const [conversationId, setConversationId] = useState(''); // 会话id
+  const valueRef = useRef(null);
+  const [messageList, setMessageList] = useState([]);
+  const messageListRef = useRef(messageList); // 用于在回调中访问最新的messageList
+  const controllerRef = useRef(null); // 发起对话接口controller
+  const [status, setStatus] = useState(0); // 0 没输入内容 1 正在输入 2 ai正在回复 3 ai即将回复
+  const [msgLoading, setMsgLoading] = useState(false); // 网络不佳的loading
+  const [data, setData] = useState({})
+  const [loading, setLoading] = useState(true); // 页面加载状态
+  const userIdentity = localStorage.getItem('identityInput') || '';
+  const finalContent = localStorage.getItem('finalContent') || '';
+  const errRef = useRef({
+    timer: null,
+    count: 0,
+  });
+  const [paper, setPaper] = useState({
+    botId: '7563851131408039946',
+    accessToken: 'pat_t5xJCB10cSORLoDoW10doS6L6LGYmi6ubgQFeEfFwMbRfUABVn4QvmqFsAM4bJjY',
+  });
   // 定义任务数据，只包含id、文本和完成状态，坐标将在组件内部管理
   const [tasks, setTasks] = useState([
-    { id: 'aaaa', text: '背诵50个单词', isCompleted: false },
-    { id: 'bbbb', text: '看一个视频', isCompleted: false },
-    { id: 'cccc', text: '做一套题', isCompleted: false },
-    { id: 'dddd', text: '造个句子', isCompleted: false },
-    { id: 'eeee', text: '热', isCompleted: true },
-    // { id: 'ccccc', text: 'ccccc', isCompleted: false },
-    // { id: 'ddddd', text: 'ddddd', isCompleted: false },
-    // { id: 'bbbbb', text: 'bbbbb', isCompleted: false }
+    {}
+    // { id: 'aaaa', text: '背诵50个单词', levelPlot: '清晨的魔法城堡里，你坐在梳妆台前，镜中映出水晶灯下摊开的单词本。今天是你逆袭计划的第一天，仙女教母留下的魔法笔记上写着：每个单词都是通往城堡的阶梯。你拿起羽毛笔，在月光般的书页上轻轻勾勒生词，每背完一个，窗外就传来一声清脆的鸟鸣，仿佛在为你加油。当最后一个单词合上笔记本时，你发现镜中的自己眼神多了几分坚定，单词本上的字迹也泛着淡淡的金光。', isCompleted: false },
+    // { id: 'bbbb', text: '看一个视频', levelPlot: '午后的图书馆里，阳光透过彩绘玻璃洒在翻开的平板电脑上。你戴上降噪耳机，点开仙女教母推荐的托福课程视频。屏幕里，Grammer教授正用魔法粉笔在虚拟黑板上绘制复杂的句子结构图，那些曾经让你头疼的从句和时态，此刻都变成了跳动的星星。当视频结束时，你发现自己不仅看懂了所有难点，还在笔记本上画满了可爱的语法小精灵。', isCompleted: false },
+    // { id: 'cccc', text: '做一套题', levelPlot: '午后的图书馆里，阳光透过彩绘玻璃洒在翻开的平板电脑上。你戴上降噪耳机，点开仙女教母推荐的托福课程视频。屏幕里，Grammer教授正用魔法粉笔在虚拟黑板上绘制复杂的句子结构图，那些曾经让你头疼的从句和时态，此刻都变成了跳动的星星。当视频结束时，你发现自己不仅看懂了所有难点，还在笔记本上画满了可爱的语法小精灵。', isCompleted: false },
+    // { id: 'dddd', text: '做一套题', levelPlot: '午后的图书馆里，阳光透过彩绘玻璃洒在翻开的平板电脑上。你戴上降噪耳机，点开仙女教母推荐的托福课程视频。屏幕里，Grammer教授正用魔法粉笔在虚拟黑板上绘制复杂的句子结构图，那些曾经让你头疼的从句和时态，此刻都变成了跳动的星星。当视频结束时，你发现自己不仅看懂了所有难点，还在笔记本上画满了可爱的语法小精灵。', isCompleted: false },
+    // { id: 'eeee', text: '做一套题', levelPlot: '午后的图书馆里，阳光透过彩绘玻璃洒在翻开的平板电脑上。你戴上降噪耳机，点开仙女教母推荐的托福课程视频。屏幕里，Grammer教授正用魔法粉笔在虚拟黑板上绘制复杂的句子结构图，那些曾经让你头疼的从句和时态，此刻都变成了跳动的星星。当视频结束时，你发现自己不仅看懂了所有难点，还在笔记本上画满了可爱的语法小精灵。', isCompleted: false },
+    // { id: 'ffff', text: '做一套题', levelPlot: '清晨的魔法城堡里，你坐在梳妆台前，镜中映出水晶灯下摊开的单词本。今天是你逆袭计划的第一天，仙女教母留下的魔法笔记上写着：每个单词都是通往城堡的阶梯。你拿起羽毛笔，在月光般的书页上轻轻勾勒生词，每背完一个，窗外就传来一声清脆的鸟鸣，仿佛在为你加油。当最后一个单词合上笔记本时，你发现镜中的自己眼神多了几分坚定，单词本上的字迹也泛着淡淡的金光。', isCompleted: false },
+    // { id: 'gggg', text: '做一套题', levelPlot: '清晨的魔法城堡里，你坐在梳妆台前，镜中映出水晶灯下摊开的单词本。今天是你逆袭计划的第一天，仙女教母留下的魔法笔记上写着：每个单词都是通往城堡的阶梯。你拿起羽毛笔，在月光般的书页上轻轻勾勒生词，每背完一个，窗外就传来一声清脆的鸟鸣，仿佛在为你加油。当最后一个单词合上笔记本时，你发现镜中的自己眼神多了几分坚定，单词本上的字迹也泛着淡淡的金光。', isCompleted: false },
+    // { id: 'hhhh', text: 'hhhh', isCompleted: false }
   ]);
 
   const imgB = 'https://simg01.gaodunwangxiao.com/uploadimgs/tmp/upload/202510/22/69af8_20251022155738.png'
-
+  // const imgB = 'https://simg01.gaodunwangxiao.com/uploadimgs/tmp/upload/202510/22/69af8_20251022155738.png'
   // 拖拽状态管理
   const [dragState, setDragState] = useState({
     isDragging: false,
@@ -52,11 +75,26 @@ const Home = () => {
     setIsSnowing(false);
   };
 
-  // 切换任务完成状态
+  // 切换任务完成状态（添加任务锁功能）
   const toggleTaskCompletion = (taskId, event) => {
     // 如果正在拖拽，不切换完成状态
     if (dragState.isDragging) return;
 
+    // 找到当前任务的索引
+    const currentTaskIndex = tasks.findIndex(task => task.id === taskId);
+
+    // 任务锁逻辑：检查前置任务是否已完成
+    // 对于索引为1的任务（第二个任务），只有当索引为0的任务（第一个任务）已完成时才能切换状态
+    // 对于索引为2的任务（第三个任务），只有当索引为1的任务（第二个任务）已完成时才能切换状态
+    if (currentTaskIndex > 0) {
+      const previousTask = tasks[currentTaskIndex - 1];
+      if (!previousTask.isCompleted) {
+        // 前置任务未完成，无法完成当前任务
+        return;
+      }
+    }
+
+    // 可以切换任务完成状态
     setTasks(tasks.map(task =>
       task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
     ));
@@ -173,8 +211,247 @@ const Home = () => {
     setTasks(tasks.map(task => ({ ...task, isCompleted: false })));
   };
 
+
+  // 初始化coze
+  const initCoze = () => {
+    if (!cozeRef.current) {
+      cozeRef.current = new CozeAPI({
+        token: paper.accessToken,
+        baseURL: 'https://api.coze.cn',
+        allowPersonalAccessTokenInBrowser: true,
+      });
+      console.log('111113444')
+      createConversation();
+    }
+  };
+
+
+  // 创建会话
+  const createConversation = () => {
+    console.log('4444444')
+    //@ts-nocheck
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log('7777', paper.botId)
+        const res = await cozeRef.current.conversations.create({
+          bot_id: paper.botId,
+        });
+        if (res?.id) {
+          setConversationId(res.id);
+          streamChatApi(res.id)
+          resolve(1);
+        } else {
+          // message.error('服务异常');
+          resolve(2);
+        }
+      } catch (error) {
+        // message.error('服务异常');
+        resolve(2);
+      }
+    });
+  };
+
+  const streamChatApi = async (id, again) => {
+    console.log('3444')
+    try {
+      controllerRef.current = new AbortController();
+
+      // 使用普通fetch请求替代fetchEventSource
+      const response = await fetch(`https://api.coze.cn/v3/chat?conversation_id=${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${paper.accessToken}`,
+        },
+        signal: controllerRef.current.signal,
+        body: JSON.stringify({
+          stream: false,
+          bot_id: paper.botId,
+          user_id: '4ff',
+          additional_messages: [
+            {
+              role: RoleType.User,
+              content: `
+              # 场景设定
+                ${userIdentity}
+             # ToDo list
+             ${finalContent}
+              `,
+              content_type: 'text',
+            },
+          ],
+        }),
+      });
+
+      // 检查响应状态
+      if (!response.ok) {
+        throw new Error(`API请求失败: ${response.status}`);
+      }
+
+      // 解析响应数据
+      const responseData = await response.json();
+      console.log('API响应数据:', responseData);
+      // 延迟10秒后调用yu函数
+      setTimeout(() => {
+        yu(responseData.data.conversation_id, responseData.data.id);
+      }, 15000);
+
+
+    } catch (error) {
+      console.log('Error:', error);
+      // handleError();
+    }
+  };
+
+  const yu = async (conversation_id, chat_id) => {
+    console.log('3444')
+    try {
+      controllerRef.current = new AbortController();
+
+      // 使用普通fetch请求替代fetchEventSource
+      const response = await fetch(`https://api.coze.cn/v3/chat/message/list?conversation_id=${conversation_id}&chat_id=${chat_id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${paper.accessToken}`,
+        },
+        signal: controllerRef.current.signal,
+      });
+
+      // 检查响应状态
+      if (!response.ok) {
+        throw new Error(`API请求失败: ${response.status}`);
+      }
+
+      // 解析响应数据
+      const responseData = await response.json();
+      console.log('API响应数据333:', responseData);
+      responseData.data.forEach(element => {
+        console.log('element33333333', element.type)
+        if (element.type === "tool_response") {
+          const parsedOutput = JSON.parse(JSON.parse(element.content).output);
+          console.log('99999element', parsedOutput);
+          setData(parsedOutput);
+
+          // 设置数据后1秒关闭loading
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
+
+          // 处理任务列表数据，添加isCompleted属性并映射ID
+          const processedTasks = parsedOutput.list.map(task => {
+            // ID映射逻辑：将数字ID转换为对应的字母ID格式
+            const idMap = {
+              1: 'aaaa',
+              2: 'bbbb',
+              3: 'cccc',
+              4: 'dddd',
+              5: 'eeee',
+              6: 'ffff',
+              7: 'gggg',
+              8: 'hhhh'
+            };
+
+            // 为每个任务添加isCompleted属性，并映射ID
+            return {
+              ...task,
+              id: idMap[task.id] || `task_${task.id}`, // 如果没有对应的映射，使用默认格式
+              isCompleted: false
+            };
+          });
+
+          setTasks(processedTasks);
+          console.log('处理后的任务列表:', processedTasks);
+        }
+      });
+
+    } catch (error) {
+      console.log('Error:', error);
+      // handleError();
+    }
+  };
+
+  useEffect(() => {
+    initCoze();
+  }, []);
+
+
+
+
+
+  // 监听messageList变化，更新ref
+  useEffect(() => {
+    messageListRef.current = messageList;
+  }, [messageList]);
+
+  console.log('-----data67676767-----', data)
+  console.log('-----tasks67676767-----', tasks)
   return (
     <div className="page home-page task-flow-container">
+      {/* 优化的加载状态显示 */}
+      {loading && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+          backdropFilter: 'blur(4px)',
+          transition: 'opacity 0.3s ease-out'
+        }}>
+          {/* 动画加载图标 */}
+          <div style={{
+            width: '80px',
+            height: '80px',
+            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            {/* 使用SVG旋转动画 */}
+            <svg style={{ animation: 'spin 1.5s linear infinite' }} width="60" height="60" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="2" strokeDasharray="28.27 9.42" strokeLinecap="round" strokeDashoffset="0" />
+              <path d="M12 2v4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
+              <path d="M12 18v4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
+              <path d="M2 12h4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
+              <path d="M18 12h4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
+              <style>{`
+                @keyframes spin {
+                  from { transform: rotate(0deg); }
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
+            </svg>
+          </div>
+
+          {/* 加载文本 */}
+          <div style={{
+            fontSize: '20px',
+            fontWeight: '500',
+            color: '#1e40af',
+            textAlign: 'center',
+            animation: 'pulse 1.5s ease-in-out infinite'
+          }}>
+            魔法故事正在加载中...
+          </div>
+
+          {/* 加载提示 */}
+          <div style={{
+            fontSize: '14px',
+            color: '#64748b',
+            marginTop: '8px',
+            opacity: 0.8
+          }}>
+            请稍候，精彩即将呈现 ✨
+          </div>
+        </div>
+      )}
       {/* 雪花效果组件 - 条件渲染 */}
       {isSnowing && <SnowEffect onSnowComplete={handleSnowComplete} />}
 
@@ -193,7 +470,7 @@ const Home = () => {
 
           {/* 渲染任务卡片 - 根据任务数量选择不同的组件 */}
           <div className="tasks" style={{
-            backgroundImage: `url(${imgB})`,
+            backgroundImage: `url(${data.bgImg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
@@ -222,7 +499,7 @@ const Home = () => {
                   dragState={dragState}
                   toggleTaskCompletion={toggleTaskCompletion}
                   handleDragStart={handleDragStart}
-
+                  tasks={tasks}
                 />;
               } else if (taskCount === 4) {
                 return <TaskCard4
@@ -233,18 +510,17 @@ const Home = () => {
                   dragState={dragState}
                   toggleTaskCompletion={toggleTaskCompletion}
                   handleDragStart={handleDragStart}
-  
+                  tasks={tasks}
                 />;
               } else if (taskCount === 5) {
                 return <TaskCard5
-                  key={task.id}
                   task={task}
                   index={index}
                   taskCount={taskCount}
                   dragState={dragState}
                   toggleTaskCompletion={toggleTaskCompletion}
                   handleDragStart={handleDragStart}
-  
+                  tasks={tasks}
                 />;
               } else if (taskCount === 6) {
                 return <TaskCard6
@@ -255,7 +531,7 @@ const Home = () => {
                   dragState={dragState}
                   toggleTaskCompletion={toggleTaskCompletion}
                   handleDragStart={handleDragStart}
-
+                  tasks={tasks}
                 />;
               } else if (taskCount === 7) {
                 return <TaskCard7
@@ -266,7 +542,7 @@ const Home = () => {
                   dragState={dragState}
                   toggleTaskCompletion={toggleTaskCompletion}
                   handleDragStart={handleDragStart}
-
+                  tasks={tasks}
                 />;
               } else if (taskCount === 8) {
                 return <TaskCard8
