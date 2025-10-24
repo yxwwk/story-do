@@ -139,7 +139,7 @@ const PageIndex = () => {
 
                            
 
-                            <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]">
+                            <button style={{background: '#918686'}} class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]">
                                 <i class="fa fa-magic mr-2"></i>生成更多故事任务
                             </button>
                         </div>
