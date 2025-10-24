@@ -218,7 +218,10 @@ const Home = () => {
   const initCoze = () => {
     
 
-      yu(conversationId2, chat_id);
+      // 延迟3秒调用yu函数
+      setTimeout(() => {
+        yu(conversationId2, chat_id);
+      }, 3000);
 
     // if (!cozeRef.current) {
     //   cozeRef.current = new CozeAPI({
@@ -338,7 +341,7 @@ const Home = () => {
         console.log('-------API响应数据333------:', responseData.data);
         console.log('当前轮询次数:', count);
         
-        // 数据存在时处理数据
+        // 只有当responseData.data存在且有数据时才进行处理
         if (responseData.data && responseData.data.length) {
           // 检查是否有type为answer的元素
           const hasAnswerElement = responseData.data.some(element => element.type === "answer");

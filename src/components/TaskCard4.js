@@ -30,10 +30,10 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   // 定义位置数据，使其在整个组件中可用
   const positions = {
     4: [
-      { x: -500, y: 20 },  // 第一个任务
-      { x: -100, y: 150 },  // 第二个任务
-      { x: 660, y: 50 },  // 第三个任务
-      { x: 660, y: 10 }   // 第四个任务
+      { x: 100, y: 20 },  // 第一个任务
+      { x: 200, y: 100 },  // 第二个任务
+      { x: 660, y: -220 },  // 第三个任务
+      { x: 1060, y: -710 }   // 第四个任务
     ],
     default: [
       { x: 150 + index * 300, y: 100 + Math.floor(index / 2) * 250 }
@@ -84,42 +84,36 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
     return { x: position.x + 300, y: position.y + 150 }; // 默认回退位置
   };
   
-  // 计算两点之间的线与矩形框的交点，并让交点远离卡片边缘一定距离
-  const getIntersectionPoint = (rectX, rectY, rectWidth, rectHeight, targetX, targetY, offset = 25) => {
+  // 简化的交点计算方法，确保连接线准确连接到卡片边缘中点
+  const getIntersectionPoint = (rectX, rectY, rectWidth, rectHeight, targetX, targetY) => {
     // 矩形中心
     const rectCenterX = rectX + rectWidth / 2;
     const rectCenterY = rectY + rectHeight / 2;
     
-    // 从矩形中心指向目标点的向量
+    // 计算方向向量
     const dx = targetX - rectCenterX;
     const dy = targetY - rectCenterY;
     
-    // 向量长度
-    const length = Math.sqrt(dx * dx + dy * dy);
-    
-    // 单位向量
-    const unitDx = dx / length;
-    const unitDy = dy / length;
-    
-    // 计算射线与矩形边缘的交点
-    let t;
+    // 根据方向选择合适的边缘中点
     if (Math.abs(dx) > Math.abs(dy)) {
-      // 水平方向更接近边缘
-      t = (rectWidth / 2) / Math.abs(dx);
+      // 水平方向为主
+      if (dx > 0) {
+        // 右侧边缘中点
+        return { x: rectX + rectWidth, y: rectCenterY };
+      } else {
+        // 左侧边缘中点
+        return { x: rectX, y: rectCenterY };
+      }
     } else {
-      // 垂直方向更接近边缘
-      t = (rectHeight / 2) / Math.abs(dy);
+      // 垂直方向为主
+      if (dy > 0) {
+        // 底部边缘中点
+        return { x: rectCenterX, y: rectY + rectHeight };
+      } else {
+        // 顶部边缘中点
+        return { x: rectCenterX, y: rectY };
+      }
     }
-    
-    // 计算交点（在卡片边缘上）
-    const edgeX = rectCenterX + t * dx;
-    const edgeY = rectCenterY + t * dy;
-    
-    // 从边缘向外偏移一定距离，使连接线远离卡片
-    const intersectionX = edgeX + unitDx * offset;
-    const intersectionY = edgeY + unitDy * offset;
-    
-    return { x: intersectionX, y: intersectionY };
   };
   
   // 故事章节连接线样式 - 水滴卡片风格
@@ -132,26 +126,24 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
       // 获取目标位置
       const targetPos = getTargetPosition(connection.target);
       
-      // 计算起点（源卡片边缘外的点，距离卡片有一定偏移）
+      // 计算起点（源卡片边缘上的点）
       const sourceIntersection = getIntersectionPoint(
         position.x, 
         position.y, 
         cardWidth, 
         cardHeight, 
         targetPos.x + cardWidth / 2, 
-        targetPos.y + cardHeight / 2,
-        25 // 增加偏移量，使连接线更远离卡片
+        targetPos.y + cardHeight / 2
       );
       
-      // 计算终点（目标卡片边缘外的点，距离卡片有一定偏移）
+      // 计算终点（目标卡片边缘上的点）
       const targetIntersection = getIntersectionPoint(
         targetPos.x, 
         targetPos.y, 
         cardWidth, 
         cardHeight, 
         position.x + cardWidth / 2, 
-        position.y + cardHeight / 2,
-        25 // 增加偏移量，使连接线更远离卡片
+        position.y + cardHeight / 2
       );
       
       return (
@@ -192,7 +184,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
               transform: `rotate(${Math.atan2(targetIntersection.y - sourceIntersection.y, targetIntersection.x - sourceIntersection.x) * (180 / Math.PI)}deg)`,
               transformOrigin: '0 50%',
               zIndex: 11,
-              marginLeft: '-2px',
+              marginLeft: '-16px', // 调整箭头位置，使其完全位于连接线上
               boxShadow: '0 3px 6px rgba(0,0,0,0.2)',
             }}
           />
@@ -213,9 +205,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   
   return (
     <>
-      {/* 先渲染连接线，确保在卡片下方 */}
-      {renderConnections()}
-      {/* 再渲染任务卡片 */}
+      {/* 渲染任务卡片 */}
       <div 
         key={task.id}
         id={task.id}

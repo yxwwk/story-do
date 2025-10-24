@@ -5,10 +5,10 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   const positions = {
     5: [
       { x: 50, y: 50 },  // 第一个任务
-      { x: 50, y: 280 },   // 第二个任务
-      { x: 450, y: 280 },  // 第三个任务
-      { x: 800, y: 280 },  // 第四个任务
-      { x: 950, y: 500 }   // 第五个任务
+      { x: 450, y: -220 },   // 第二个任务
+      { x: 850, y: -480 },  // 第三个任务
+      { x: 50, y: -380 },  // 第四个任务
+      { x: 450, y: -640 }   // 第五个任务
     ],
     default: [
       { x: 100 + (index % 3) * 200, y: 100 + Math.floor(index / 3) * 200 }
@@ -233,9 +233,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   
   return (
     <>
-      {/* 先渲染连接线，确保在卡片下方 */}
-      {renderConnections()}
-      {/* 再渲染任务卡片 */}
+      {/* 渲染任务卡片 */}
       <div 
         key={task.id}
         id={task.id}
@@ -245,152 +243,221 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           top: `${position.y}px`,
           cursor: dragState.isDragging && dragState.taskId === task.id ? 'grabbing' : 'grab',
           zIndex: 5,
-          backgroundColor: isTaskLocked() ? '#f3f4f6' : '#ffffff',
-          borderRadius: '16px',
-          boxShadow: isTaskLocked() 
-            ? '0 8px 20px rgba(0, 0, 0, 0.05)' 
-            : (task.isCompleted || false) 
-              ? '0 8px 20px rgba(16, 185, 129, 0.15)' 
-              : '0 8px 20px rgba(249, 115, 22, 0.15)', // 橙色主题阴影
-          border: `1px solid ${(task.isCompleted || false) ? '#d1fae5' : '#fed7aa'}`,
-          width: '260px', // 缩小宽度
-          height: '120px', // 相应减小高度
+          backgroundColor: '#f8f3e6',
+          boxShadow: (task.isCompleted || false) 
+            ? '0 10px 30px rgba(139, 69, 19, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4) inset' 
+            : '0 10px 30px rgba(139, 69, 19, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3) inset',
+          border: `1px solid #d4c8a1`,
+          width: '240px',
+          height: '220px',
           display: 'flex',
-          flexDirection: 'row', // 改为左右布局
+          flexDirection: 'column',
           overflow: 'hidden',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: dragState.isDragging && dragState.taskId === task.id ? 'scale(1.03) rotate(1deg)' : 'scale(1)',
+          transform: dragState.isDragging && dragState.taskId === task.id ? 'scale(1.05) rotate(1deg)' : 'scale(1)',
+          backgroundImage: 'url("https://www.transparenttextures.com/patterns/old-paper.png")',
+          backgroundBlendMode: 'overlay',
+          position: 'relative',
+          filter: 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2))',
+          borderRadius: '12px',
         }}
         onClick={(event) => handleCardClick(event)}
         onMouseDown={(event) => handleDragStart(task.id, event)}
         onTouchStart={(event) => handleDragStart(task.id, event.touches[0])}
       >
-        {/* 任务图片区域 - 作为卡片的左侧 */}
+        {/* 水滴形状的装饰性顶部 - 故事章节风格 */}
+        <div style={{
+          width: '100%',
+          height: '15px',
+          background: 'linear-gradient(to bottom, #8b4513, #d4a76a, #f8f3e6)',
+          boxShadow: '0 1px 5px rgba(0, 0, 0, 0.2) inset',
+          borderTopLeftRadius: '12px',
+          borderTopRightRadius: '12px',
+          position: 'relative',
+        }}>
+          {/* 装饰性章节线 */}
+          <div style={{
+            position: 'absolute',
+            bottom: '0',
+            left: '10%',
+            width: '80%',
+            height: '1px',
+            background: 'linear-gradient(to right, transparent, rgba(139, 69, 19, 0.7), transparent)'
+          }} />
+        </div>
+        
+        {/* 任务头部 - 装饰和标题 */}
+        <div style={{
+          width: '100%',
+          height: '2px',
+          background: 'linear-gradient(to right, transparent, #8b4513, transparent)',
+          marginTop: '8px',
+          marginBottom: '10px',
+        }} />
+        
+        {/* 故事章节插图区域 - 水滴形状顶部 */}
         <div 
           className="task-image-container" 
           style={{
-            width: '100px', // 缩小图片宽度
-            height: '100%',
+            width: '100%',
+            height: '100px',
             overflow: 'hidden',
             position: 'relative',
+            borderBottom: '1px solid rgba(212, 167, 106, 0.6)',
           }}
         >
+          {/* 装饰性边框 */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            border: '8px solid rgba(255, 255, 255, 0.2)',
+            pointerEvents: 'none',
+          }} />
+          
           {/* 网络图片 */}
           <img 
-               src={`${task.image_url}`} 
-            alt={`任务 ${task.text}`} 
+            src={`${task.image_url}`} 
+            alt={`故事章节 ${task.text}`} 
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              borderRadius: '16px 0 0 16px', // 左侧圆角
+              opacity: 0.85,
+              transition: 'transform 0.5s ease',
             }}
           />
           
-          {/* 左侧装饰条 - 根据完成状态变化颜色 */}
+          {/* 故事书风格的覆盖层 */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(to bottom, rgba(248, 243, 230, 0.1), rgba(248, 243, 230, 0.6))',
+            backgroundImage: 'url("https://www.transparenttextures.com/patterns/paper-fibers.png")',
+            backgroundBlendMode: 'multiply',
+            opacity: 0.6,
+          }} />
+          
+          {/* 章节装饰编号 - 故事书风格 */}
           <div 
-            className="task-left-bar" 
             style={{
-              width: '4px',
-              height: '100%',
               position: 'absolute',
-              left: 0,
-              top: 0,
-              backgroundColor: isTaskLocked() ? '#9ca3af' : (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
+              top: '10px',
+              right: '10px',
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(139, 69, 19, 0.9)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 3px 6px rgba(0,0,0,0.25)',
+              border: '2px solid rgba(255, 255, 255, 0.6)',
             }}
-          />
+          >
+            <span style={{
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+            }}>
+              {index + 1}
+            </span>
+          </div>
         </div>
         
-        {/* 任务内容区域 - 作为卡片的右侧 */}
+        {/* 故事内容区域 - 参考弹窗风格 */}
         <div className="task-content" style={{
               flex: 1,
-              padding: '12px', // 减小内边距
-              backgroundColor: 'white',
+              padding: '15px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+              position: 'relative',
             }}>
-          {/* 任务头部信息 */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '8px',
-          }}>
-            <div className="task-number" style={{
-              fontSize: '10px', // 减小字体大小
-              fontWeight: '600',
-              color: isTaskLocked() ? '#9ca3af' : (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}>
-              任务 {index + 1}
-            </div>
-            
-            {/* 状态指示器 */}
-            <div 
-              className="status-indicator" 
-              style={{
-                width: '8px',
-                height: '8px', // 减小状态指示器大小
-                borderRadius: '50%',
-                backgroundColor: (task.isCompleted || false) ? '#10b981' : '#f97316', // 橙色主题
-                boxShadow: `0 0 0 3px rgba(249, 115, 22, 0.1)`,
-              }}
-            />
-          </div>
-          
-          {/* 任务标题 - 多行显示 */}
+          {/* 故事章节标题 - 参考弹窗风格 */}
           <div className="task-text" style={{
-              fontSize: '14px', // 减小字体大小
+              fontSize: '16px',
               fontWeight: '700',
-              color: isTaskLocked() ? '#9ca3af' : '#111827',
-              textAlign: 'left',
-              lineHeight: '1.3',
-              marginBottom: 'auto', // 自动填充中间空间
-              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-              textDecoration: 'none',
+              color: task.isCompleted ? '#8b4513' : isTaskLocked() ? '#9ca3af' : '#4a3c31',
+              textAlign: 'center',
+              lineHeight: '1.4',
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              textDecoration: task.isCompleted ? 'line-through' : 'none',
+              textDecorationColor: '#8b4513',
+              textDecorationThickness: '2px',
+              textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
+              letterSpacing: '0.5px',
+              paddingBottom: '10px',
             }}>
             {task.text}
           </div>
           
-          {/* 任务底部 - 进度条区域 */}
+          {/* 故事章节状态信息 - 参考弹窗风格 */}
           <div className="task-footer" style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '6px',
-            marginTop: '8px',
-          }}>
-            {/* 进度条容器 */}
-            <div style={{
               width: '100%',
-              height: '6px',
-              backgroundColor: '#f3f4f6',
-              borderRadius: '4px',
-              overflow: 'hidden',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 'auto',
+              paddingTop: '8px',
+              borderTop: '1px dashed rgba(139, 69, 19, 0.4)',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: '8px',
+              borderRadius: '8px',
             }}>
-              {/* 进度条填充 */}
-              <div 
-                style={{
-                  width: `${completionPercentage}%`,
-                  height: '100%',
-                  backgroundColor: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? '#10b981' : '#f97316'), // 橙色主题
-                  borderRadius: '4px',
-                  transition: 'width 0.5s ease',
-                }}
-              />
+            {/* 状态文本 - 参考弹窗风格 */}
+            <div style={{
+              fontSize: '12px',
+              color: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? '#8b4513' : '#cd5c5c'),
+              fontWeight: '600',
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              letterSpacing: '0.3px',
+              textTransform: 'uppercase',
+            }}>
+              {isTaskLocked() ? '已锁定' : (task.isCompleted ? '已完成' : '未完成')}
             </div>
             
-            {/* 进度文本 */}
-              <div style={{
-                fontSize: '11px',
-                color: '#6b7280',
-                textAlign: 'left', // 改为左对齐
-              }}>
-                {task.isCompleted ? '已完成' : `${completionPercentage}% 未开始`}
-              </div>
+            {/* 状态指示器 - 参考弹窗风格 */}
+            <div 
+              className="status-indicator" 
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                backgroundColor: task.isCompleted ? '#8b4513' : isTaskLocked() ? '#9ca3af' : '#cd5c5c',
+                boxShadow: `0 0 0 4px rgba(139, 69, 19, 0.1), 0 2px 4px rgba(0,0,0,0.2)`,
+                border: '1px solid rgba(255,255,255,0.5)',
+              }}
+            />
           </div>
+        </div>
+        
+        {/* 水滴形状的装饰性底部 */}
+        <div style={{
+          width: '100%',
+          height: '15px',
+          background: 'linear-gradient(to top, #8b4513, #d4a76a, #f8f3e6)',
+          boxShadow: '0 -1px 5px rgba(0, 0, 0, 0.2) inset',
+          borderBottomLeftRadius: '12px',
+          borderBottomRightRadius: '12px',
+          position: 'relative',
+        }}>
+          {/* 底部装饰线 */}
+          <div style={{
+            position: 'absolute',
+            top: '0',
+            left: '10%',
+            width: '80%',
+            height: '1px',
+            background: 'linear-gradient(to right, transparent, rgba(139, 69, 19, 0.7), transparent)'
+          }} />
         </div>
       </div>
       
