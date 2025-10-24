@@ -355,7 +355,7 @@ const FloatingBubble = () => {
       onTouchStart={handleTouchStart}
       onDragStart={(e) => e.preventDefault()} // 防止拖动时默认的拖拽行为
     >
-      <img 
+      {/* <img 
         src={avatarImage} 
         alt="豆包头像" 
         style={{
@@ -367,7 +367,7 @@ const FloatingBubble = () => {
           animation: isDragging.current ? 'none' : 'floatAndBreathe 9s ease-in-out infinite',
           transition: 'transform 0.3s ease'
         }}
-      />
+      /> */}
       {/* 小泡泡容器 */}
       <div
         ref={bubbleContainerRef}

@@ -1,0 +1,13 @@
+.taskBtnWrap {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+.watch {
+    width: 80px;
+    font-size: 12px;
+    flex-shrink: 0;
+        color: green;
+
+}

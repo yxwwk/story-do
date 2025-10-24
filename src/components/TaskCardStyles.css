@@ -245,6 +245,7 @@
 }
 
 .task-card-5 .task-content {
+  width: 100%;
   flex: 1;
   padding: 12px;
   display: flex;

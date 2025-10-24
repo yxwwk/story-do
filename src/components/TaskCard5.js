@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-
+import './taskCard.css'
+import LockModal from './lockModal';
+import './index.js'
 const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, handleDragStart, tasks }) => {
+
+    const [modalOpen, setModalOpen] = React.useState(false);
   // 定义位置数据，使其在整个组件中可用
   const positions = {
     5: [
@@ -30,6 +34,51 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
     { source: 'dddd', target: 'eeee', type: 'line' }  // 4 -> 5
   ];
   
+ // 修改createConfetti函数，使用confetti.js中的高级特效
+function createConfetti() {
+    // 使用confetti.js提供的胜利特效预设
+    if (window.confetti && window.confettiPresets) {
+        // 创建连续的烟花效果
+        window.createFireworksBurst(3, 800);
+        
+
+    } else {
+        // 降级方案：使用简单的粒子效果
+        const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#FF8E8E', '#6BCB77'];
+        const confettiCount = 200;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'particle';
+            
+            // 随机大小、形状和颜色
+            const size = Math.random() * 10 + 5;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size}px`;
+            confetti.style.backgroundColor = color;
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.top = `-${size}px`;
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            
+            // 随机旋转和动画延迟
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            confetti.style.animationDelay = `${Math.random() * 2}s`;
+            confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            
+            document.body.appendChild(confetti);
+
+            
+            // 动画结束后移除
+            setTimeout(() => {
+
+                confetti.remove();
+
+            }, 5000);
+        }
+    }
+}
   // 获取当前任务相关的连接
   const getTaskConnections = () => {
     // 只让源任务渲染连接线，避免重复渲染
@@ -214,7 +263,13 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   // 处理卡片点击事件
   const handleCardClick = (event) => {
     // 无论任务是否锁定，都打开故事章节弹窗
+    if(isTaskLocked()) {
+    setModalOpen(true)
+
+    } else {
     setIsModalOpen(true);
+
+    }
   };
   
   // 检查任务是否被锁定
@@ -239,8 +294,8 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
         id={task.id}
         className={`task-card task-card-5 ${task.isCompleted ? 'task-completed' : ''} ${dragState.isDragging && dragState.taskId === task.id ? 'dragging' : ''}`}
         style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
+          // left: `${position.x}px`,
+          // top: `${position.y}px`,
           cursor: dragState.isDragging && dragState.taskId === task.id ? 'grabbing' : 'grab',
           zIndex: 5,
           backgroundColor: '#f8f3e6',
@@ -260,13 +315,15 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           position: 'relative',
           filter: 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2))',
           borderRadius: '12px',
+          opacity: isTaskLocked() ? '0.5' : '1',
+          // pointerEvents: isTaskLocked() ? 'none' : 'auto',
         }}
         onClick={(event) => handleCardClick(event)}
         onMouseDown={(event) => handleDragStart(task.id, event)}
         onTouchStart={(event) => handleDragStart(task.id, event.touches[0])}
       >
         {/* 水滴形状的装饰性顶部 - 故事章节风格 */}
-        <div style={{
+        {/* <div style={{
           width: '100%',
           height: '15px',
           background: 'linear-gradient(to bottom, #8b4513, #d4a76a, #f8f3e6)',
@@ -274,34 +331,35 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           borderTopLeftRadius: '12px',
           borderTopRightRadius: '12px',
           position: 'relative',
-        }}>
+        }}> */}
           {/* 装饰性章节线 */}
-          <div style={{
+          {/* <div style={{
             position: 'absolute',
             bottom: '0',
             left: '10%',
             width: '80%',
             height: '1px',
             background: 'linear-gradient(to right, transparent, rgba(139, 69, 19, 0.7), transparent)'
-          }} />
-        </div>
+          }} /> */}
+        {/* </div> */}
         
         {/* 任务头部 - 装饰和标题 */}
-        <div style={{
+        {/* <div style={{
           width: '100%',
           height: '2px',
           background: 'linear-gradient(to right, transparent, #8b4513, transparent)',
           marginTop: '8px',
           marginBottom: '10px',
-        }} />
+        }} /> */}
         
         {/* 故事章节插图区域 - 水滴形状顶部 */}
         <div 
           className="task-image-container" 
           style={{
             width: '100%',
-            height: '100px',
+            height: '60%',
             overflow: 'hidden',
+            flexShrink: 0,
             position: 'relative',
             borderBottom: '1px solid rgba(212, 167, 106, 0.6)',
           }}
@@ -398,10 +456,14 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
             }}>
             {task.text}
           </div>
-          
-          {/* 故事章节状态信息 - 参考弹窗风格 */}
-          <div className="task-footer" style={{
-              width: '100%',
+          <div className='taskBtnWrap' style={{justifyContent: task.isCompleted ? 'space-between' : 'flex-end'}}>
+            {
+              task.isCompleted && <div className='watch'>点击查看剧情</div>
+            }
+            
+
+        <div className="task-footer" style={{
+              width: '100px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -437,10 +499,12 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
               }}
             />
           </div>
+          </div>
+          
         </div>
         
         {/* 水滴形状的装饰性底部 */}
-        <div style={{
+        {/* <div style={{
           width: '100%',
           height: '15px',
           background: 'linear-gradient(to top, #8b4513, #d4a76a, #f8f3e6)',
@@ -448,17 +512,17 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           borderBottomLeftRadius: '12px',
           borderBottomRightRadius: '12px',
           position: 'relative',
-        }}>
+        }}> */}
           {/* 底部装饰线 */}
-          <div style={{
+          {/* <div style={{
             position: 'absolute',
             top: '0',
             left: '10%',
             width: '80%',
             height: '1px',
             background: 'linear-gradient(to right, transparent, rgba(139, 69, 19, 0.7), transparent)'
-          }} />
-        </div>
+          }} /> */}
+        {/* </div> */}
       </div>
       
       {/* 故事章节风格弹窗 */}
@@ -570,7 +634,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
             </div>
             
             {/* 任务状态 */}
-            <div className="task-status" style={{
+            {/* <div className="task-status" style={{
               fontSize: '16px',
               color: '#8b4513',
               textAlign: 'center',
@@ -584,7 +648,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
               ) : (
                 <span>任务已解锁，准备好接受挑战了吗？</span>
               )}
-            </div>
+            </div> */}
             
             {/* 底部按钮 */}
             <div className="modal-footer" style={{
@@ -611,7 +675,17 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
                     : '0 2px 6px rgba(16, 185, 129, 0.3)',
                 }}
                   onClick={() => {
+                    if(!task.isCompleted) {
+                      createConfetti()
+                      setTimeout(() => {
+                        setIsModalOpen(false);
+                      }, 3000);
+                    } else {
+                      setIsModalOpen(false);
+
+                    }
                     toggleTaskCompletion(task.id);
+                    
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.backgroundColor = task.isCompleted ? '#dc2626' : '#059669';
@@ -649,7 +723,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
                   e.target.style.transform = 'translateY(0)';
                 }}
               >
-           关闭卷轴
+           {task.isCompleted ? '关闭卷轴': "去进行任务"}
               </button>
             </div>
             
@@ -675,6 +749,7 @@ const TaskCard5 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           </div>
         </div>
       )}
+      {modalOpen && <LockModal isOpen={modalOpen} onClose={() => setModalOpen(false)} /> }
     </>
   );
 };

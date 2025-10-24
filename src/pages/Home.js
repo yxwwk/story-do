@@ -626,118 +626,129 @@ const Home = () => {
           }}>
             {tasks.map((task, index) => {
               const taskCount = tasks.length;
-
+              return ( 
+                <TaskCard5
+                  key={task.id}
+                  task={task}
+                  index={index}
+                  taskCount={taskCount}
+                  dragState={dragState}
+                  toggleTaskCompletion={toggleTaskCompletion}
+                  handleDragStart={handleDragStart}
+                  tasks={tasks}
+                />
+              );
               // 根据任务数量选择不同的组件
-              if (taskCount === 2) {
-                return <TaskCard2
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
+              // if (taskCount === 2) {
+              //   return <TaskCard2
+              //     key={task.id}
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
 
-                />;
-              } else if (taskCount === 3) {
-                return <TaskCard3
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
-                  tasks={tasks}
-                />;
-              } else if (taskCount === 4) {
-                return <TaskCard4
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
-                  tasks={tasks}
-                />;
-              } else if (taskCount === 5) {
-                return <TaskCard5
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
-                  tasks={tasks}
-                />;
-              } else if (taskCount === 6) {
-                return <TaskCard6
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
-                  tasks={tasks}
-                />;
-              } else if (taskCount === 7) {
-                return <TaskCard7
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
-                  tasks={tasks}
-                />;
-              } else if (taskCount === 8) {
-                return <TaskCard8
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  taskCount={taskCount}
-                  dragState={dragState}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  handleDragStart={handleDragStart}
+              //   />;
+              // } else if (taskCount === 3) {
+              //   return <TaskCard3
+              //     key={task.id}
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
+              //     tasks={tasks}
+              //   />;
+              // } else if (taskCount === 4) {
+              //   return <TaskCard4
+              //     key={task.id}
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
+              //     tasks={tasks}
+              //   />;
+              // } else if (taskCount === 5) {
+              //   return <TaskCard5
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
+              //     tasks={tasks}
+              //   />;
+              // } else if (taskCount === 6) {
+              //   return <TaskCard6
+              //     key={task.id}
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
+              //     tasks={tasks}
+              //   />;
+              // } else if (taskCount === 7) {
+              //   return <TaskCard7
+              //     key={task.id}
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
+              //     tasks={tasks}
+              //   />;
+              // } else if (taskCount === 8) {
+              //   return <TaskCard8
+              //     key={task.id}
+              //     task={task}
+              //     index={index}
+              //     taskCount={taskCount}
+              //     dragState={dragState}
+              //     toggleTaskCompletion={toggleTaskCompletion}
+              //     handleDragStart={handleDragStart}
 
-                />;
-              } else {
-                // 默认使用TaskCard1（原TaskCard）
-                return <div
-                  key={task.id}
-                  id={task.id}
-                  className={`task-card ${task.isCompleted ? 'task-completed' : ''} ${dragState.isDragging && dragState.taskId === task.id ? 'dragging' : ''}`}
-                  style={{
-                    left: `${100 + index * 200}px`,
-                    top: `${100 + (index % 2) * 150}px`,
-                    cursor: dragState.isDragging && dragState.taskId === task.id ? 'grabbing' : 'grab'
-                  }}
-                  onClick={(event) => toggleTaskCompletion(task.id, event)}
-                  onMouseDown={(event) => handleDragStart(task.id, event)}
-                  onTouchStart={(event) => handleDragStart(task.id, event.touches[0])}
-                >
-                  <div className="task-image">
-                    <div className="mountain-icon">
-                      <svg viewBox="0 0 40 30" width="40" height="30">
-                        <polygon points="0,30 20,10 40,30" fill="#3b82f6" />
-                        <polygon points="5,30 20,15 35,30" fill="#60a5fa" />
-                      </svg>
-                      {task.isCompleted && (
-                        <div className="completion-check">
-                          <svg viewBox="0 0 20 20" width="20" height="20">
-                            <circle cx="10" cy="10" r="8" fill="#22c55e" />
-                            <path d="M5,10 L8,13 L15,6" stroke="white" strokeWidth="2" fill="none" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="task-text">{task.text}</div>
-                </div>;
-              }
+              //   />;
+              // } else {
+              //   // 默认使用TaskCard1（原TaskCard）
+              //   return <div
+              //     key={task.id}
+              //     id={task.id}
+              //     className={`task-card ${task.isCompleted ? 'task-completed' : ''} ${dragState.isDragging && dragState.taskId === task.id ? 'dragging' : ''}`}
+              //     style={{
+              //       left: `${100 + index * 200}px`,
+              //       top: `${100 + (index % 2) * 150}px`,
+              //       cursor: dragState.isDragging && dragState.taskId === task.id ? 'grabbing' : 'grab'
+              //     }}
+              //     onClick={(event) => toggleTaskCompletion(task.id, event)}
+              //     onMouseDown={(event) => handleDragStart(task.id, event)}
+              //     onTouchStart={(event) => handleDragStart(task.id, event.touches[0])}
+              //   >
+              //     <div className="task-image">
+              //       <div className="mountain-icon">
+              //         <svg viewBox="0 0 40 30" width="40" height="30">
+              //           <polygon points="0,30 20,10 40,30" fill="#3b82f6" />
+              //           <polygon points="5,30 20,15 35,30" fill="#60a5fa" />
+              //         </svg>
+              //         {task.isCompleted && (
+              //           <div className="completion-check">
+              //             <svg viewBox="0 0 20 20" width="20" height="20">
+              //               <circle cx="10" cy="10" r="8" fill="#22c55e" />
+              //               <path d="M5,10 L8,13 L15,6" stroke="white" strokeWidth="2" fill="none" />
+              //             </svg>
+              //           </div>
+              //         )}
+              //       </div>
+              //     </div>
+              //     <div className="task-text">{task.text}</div>
+              //   </div>;
+              // }
             })}
           </div>
         </div>
