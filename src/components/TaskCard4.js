@@ -212,11 +212,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
   };
   
   return (
-    <div style={{
-      position: 'relative',
-      width: '100%',
-      height: '100%'
-    }}>
+    <>
       {/* 先渲染连接线，确保在卡片下方 */}
       {renderConnections()}
       {/* 再渲染任务卡片 */}
@@ -639,7 +635,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
