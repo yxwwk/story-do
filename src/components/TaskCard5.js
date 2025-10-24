@@ -304,7 +304,7 @@ function createConfetti() {
             : '0 10px 30px rgba(139, 69, 19, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3) inset',
           border: `1px solid #d4c8a1`,
           width: '240px',
-          height: '220px',
+          height: '260px',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -433,7 +433,7 @@ function createConfetti() {
         {/* 故事内容区域 - 参考弹窗风格 */}
         <div className="task-content" style={{
               flex: 1,
-              padding: '15px',
+              padding: '15px 0',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -456,9 +456,9 @@ function createConfetti() {
             }}>
             {task.text}
           </div>
-          <div className='taskBtnWrap' style={{justifyContent: task.isCompleted ? 'space-between' : 'flex-end'}}>
+          <div className='taskBtnWrap' style={{justifyContent: !task.isCompleted && !isTaskLocked() ? 'space-between' : 'flex-end'}}>
             {
-              task.isCompleted && <div className='watch'>点击查看剧情</div>
+              !task.isCompleted && !isTaskLocked()&& <div className='watch'>点击查看剧情</div>
             }
             
 
@@ -477,13 +477,13 @@ function createConfetti() {
             {/* 状态文本 - 参考弹窗风格 */}
             <div style={{
               fontSize: '12px',
-              color: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? '#8b4513' : '#cd5c5c'),
+              color: isTaskLocked() ? '#9ca3af' : (task.isCompleted ? 'green' : '#cd5c5c'),
               fontWeight: '600',
               fontFamily: '"Georgia", "Times New Roman", serif',
               letterSpacing: '0.3px',
               textTransform: 'uppercase',
             }}>
-              {isTaskLocked() ? '已锁定' : (task.isCompleted ? '已完成' : '未完成')}
+              {isTaskLocked() ? '锁定中' : (task.isCompleted ? '已完成' : '未完成')}
             </div>
             
             {/* 状态指示器 - 参考弹窗风格 */}
@@ -493,7 +493,7 @@ function createConfetti() {
                 width: '12px',
                 height: '12px',
                 borderRadius: '50%',
-                backgroundColor: task.isCompleted ? '#8b4513' : isTaskLocked() ? '#9ca3af' : '#cd5c5c',
+                backgroundColor: task.isCompleted ? 'green' : isTaskLocked() ? '#9ca3af' : '#cd5c5c',
                 boxShadow: `0 0 0 4px rgba(139, 69, 19, 0.1), 0 2px 4px rgba(0,0,0,0.2)`,
                 border: '1px solid rgba(255,255,255,0.5)',
               }}
