@@ -6,7 +6,7 @@ import { MMarkdown } from '@myun/gimi-design';
 // import ShowMarkdown from '../components/show-markdown/markdown.js';
 import '../pages/About.css';
 
-
+//23
 const About = () => {
   // 所有状态变量和useRef都在组件顶层作用域
   const [step, setStep] = useState('selectedIdentity'); // selectedIdentity, editor, initial - 现在身份选择在第一个
