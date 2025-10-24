@@ -394,62 +394,148 @@ const Home = () => {
           position: 'fixed',
           top: 0,
           left: 0,
-          right: 0,
-          bottom: 0,
+          width: '100%',
+          height: '100%',
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 9999,
-          backdropFilter: 'blur(4px)',
+          backdropFilter: 'blur(6px)',
           transition: 'opacity 0.3s ease-out'
         }}>
-          {/* 动画加载图标 */}
+          {/* 动画加载图标容器 */}
           <div style={{
-            width: '80px',
-            height: '80px',
-            marginBottom: '20px',
+            width: '120px',
+            height: '120px',
+            marginBottom: '30px',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            position: 'relative'
           }}>
-            {/* 使用SVG旋转动画 */}
-            <svg style={{ animation: 'spin 1.5s linear infinite' }} width="60" height="60" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="2" strokeDasharray="28.27 9.42" strokeLinecap="round" strokeDashoffset="0" />
-              <path d="M12 2v4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
-              <path d="M12 18v4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
-              <path d="M2 12h4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
-              <path d="M18 12h4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
+            {/* 装饰性背景圆环 */}
+            <svg width="100" height="100" viewBox="0 0 100 100" style={{ position: 'absolute' }}>
+              <circle 
+                cx="50" 
+                cy="50" 
+                r="45" 
+                fill="none" 
+                stroke="#e0e7ff" 
+                strokeWidth="4"
+              />
+            </svg>
+            
+            {/* 主旋转动画 */}
+            <svg style={{ animation: 'spin 2s linear infinite' }} width="80" height="80" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="loadingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
+              <circle 
+                cx="50" 
+                cy="50" 
+                r="35" 
+                fill="none" 
+                stroke="url(#loadingGradient)" 
+                strokeWidth="5" 
+                strokeDasharray="130 40" 
+                strokeLinecap="round" 
+                strokeDashoffset="0" 
+                style={{ filter: 'drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3))' }}
+              />
               <style>{`
                 @keyframes spin {
                   from { transform: rotate(0deg); }
                   to { transform: rotate(360deg); }
                 }
+                @keyframes pulse {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.8; transform: scale(1.05); }
+                }
+                @keyframes float {
+                  0%, 100% { transform: translateY(0); }
+                  50% { transform: translateY(-8px); }
+                }
+                @keyframes fadeInOut {
+                  0%, 100% { opacity: 0.4; }
+                  50% { opacity: 1; }
+                }
               `}</style>
             </svg>
+            
+            {/* 中心点装饰 */}
+            <div style={{
+              position: 'absolute',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+              boxShadow: '0 0 15px rgba(59, 130, 246, 0.5)',
+              animation: 'pulse 2s ease-in-out infinite'
+            }} />
           </div>
 
           {/* 加载文本 */}
           <div style={{
-            fontSize: '20px',
-            fontWeight: '500',
+            fontSize: '24px',
+            fontWeight: '600',
             color: '#1e40af',
             textAlign: 'center',
-            animation: 'pulse 1.5s ease-in-out infinite'
+            animation: 'float 2s ease-in-out infinite',
+            textShadow: '0 2px 4px rgba(30, 64, 175, 0.1)'
           }}>
             魔法故事正在加载中...
           </div>
 
           {/* 加载提示 */}
           <div style={{
-            fontSize: '14px',
+            fontSize: '16px',
             color: '#64748b',
-            marginTop: '8px',
-            opacity: 0.8
+            marginTop: '12px',
+            opacity: 0.9,
+            animation: 'fadeInOut 2.5s ease-in-out infinite'
           }}>
             请稍候，精彩即将呈现 ✨
           </div>
+          
+          {/* 装饰性粒子 */}
+          <div style={{
+            position: 'absolute',
+            top: '30%',
+            left: '20%',
+            width: '15px',
+            height: '15px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            animation: 'float 3s ease-in-out infinite',
+            boxShadow: '0 0 10px rgba(59, 130, 246, 0.7)'
+          }} />
+          <div style={{
+            position: 'absolute',
+            top: '25%',
+            right: '25%',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(139, 92, 246, 0.5)',
+            animation: 'float 4s ease-in-out infinite 0.5s',
+            boxShadow: '0 0 10px rgba(139, 92, 246, 0.7)'
+          }} />
+          <div style={{
+            position: 'absolute',
+            bottom: '20%',
+            right: '30%',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            animation: 'float 3.5s ease-in-out infinite 1s',
+            boxShadow: '0 0 10px rgba(59, 130, 246, 0.7)'
+          }} />
         </div>
       )}
       {/* 雪花效果组件 - 条件渲染 */}
@@ -470,7 +556,7 @@ const Home = () => {
 
           {/* 渲染任务卡片 - 根据任务数量选择不同的组件 */}
           <div className="tasks" style={{
-            backgroundImage: `url(${data.bgImg})`,
+            // backgroundImage: `url(${imgB})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
