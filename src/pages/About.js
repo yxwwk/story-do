@@ -34,13 +34,15 @@ const About = () => {
   const [countdown, setCountdown] = useState(5);
   const [hasCountdownStarted, setHasCountdownStarted] = useState(false);
 
-    const valueRef = useRef(null);
-    const cozeRef = useRef(null); // 扣子实例
-        const [conversationId, setConversationId] = useState(''); // 会话id
-    const errRef = useRef({
-        timer: null,
-        count: 0,
-    });
+  const valueRef = useRef(null);
+  const cozeRef = useRef(null); // 扣子实例
+  const cozeRef2 = useRef(null); // 扣子实例
+  const [conversationId, setConversationId] = useState(''); // 会话id
+  const [conversationId2, setConversationId2] = useState(''); // 会话id
+  const errRef = useRef({
+    timer: null,
+    count: 0,
+  });
 
 
   const [paper, setPaper] = useState({
@@ -48,6 +50,103 @@ const About = () => {
     accessToken: 'pat_t5xJCB10cSORLoDoW10doS6L6LGYmi6ubgQFeEfFwMbRfUABVn4QvmqFsAM4bJjY',
   });
 
+  //生成关卡的扣子实例
+  const [paper2, setPaper2] = useState({
+    botId: '7563851131408039946',
+    accessToken: 'pat_t5xJCB10cSORLoDoW10doS6L6LGYmi6ubgQFeEfFwMbRfUABVn4QvmqFsAM4bJjY',
+  });
+
+
+  // 初始化coze
+  const initCoze2 = () => {
+    if (!cozeRef2.current) {
+      cozeRef2.current = new CozeAPI({
+        token: paper2.accessToken,
+        baseURL: 'https://api.coze.cn',
+        allowPersonalAccessTokenInBrowser: true,
+      });
+      createConversation2();
+    }
+  };
+
+  // 创建会话
+  const createConversation2 = () => {
+    //@ts-nocheck
+    return new Promise(async (resolve, reject) => {
+      console.log('创建会话66666666666', paper2.botId)
+      try {
+        const res = await cozeRef.current.conversations.create({
+          bot_id: paper2.botId,
+        });
+        if (res?.id) {
+          setConversationId2(res.id);
+          // streamChatApi2(res.id)
+          resolve(1);
+        } else {
+          // message.error('服务异常');
+          resolve(2);
+        }
+      } catch (error) {
+        // message.error('服务异常');
+        resolve(2);
+      }
+    });
+  };
+
+
+  const streamChatApi2 = async (id, again) => {
+    console.log('进入下一个环节----提前创建会话66666666666')
+    try {
+      controllerRef.current = new AbortController();
+
+      // 使用普通fetch请求替代fetchEventSource
+      const response = await fetch(`https://api.coze.cn/v3/chat?conversation_id=${conversationId2}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${paper2.accessToken}`,
+        },
+        signal: controllerRef.current.signal,
+        body: JSON.stringify({
+          stream: false,
+          bot_id: paper2.botId,
+          user_id: '4ff',
+          additional_messages: [
+            {
+              role: '878',
+              content: `
+              # 场景设定
+              '''
+                ${messageList[0]?.content || ''}
+                '''
+              # ToDo list
+              '''
+              ${localStorage.getItem('finalContent') || ''} '''
+              `,
+              content_type: 'text',
+            },
+          ],
+        }),
+      });
+
+      // 检查响应状态
+      if (!response.ok) {
+        throw new Error(`API请求失败: ${response.status}`);
+      }
+
+      // 解析响应数据
+      const responseData = await response.json();
+      console.log('API响应数据，第二个页面:', responseData);
+      localStorage.setItem('conversationId2', responseData?.data?.conversation_id || '');
+      localStorage.setItem('id2', responseData?.data?.id || '');
+      
+      // API调用成功并保存数据后，启用开始学习按钮
+      setIsStartButtonDisabled(false);
+    } catch (error) {
+      console.log('Error:', error);
+      // handleError();
+    }
+  };
 
   // 处理身份确认
   const handleIdentityConfirm = () => {
@@ -82,64 +181,9 @@ const About = () => {
     streamChatApi();
   };
 
-  // 获取AI回复
-  const fetchAIResponse = async () => {
-    try {
-      setStatus(2); // AI正在回复
 
-      // 创建AbortController用于控制请求
-      const controller = new AbortController();
-      controllerRef.current = controller;
 
-      // 准备发送给AI的消息
-      const customIdentity = identityInput.trim();
-      let identityInfo;
-
-      if (customIdentity) {
-        identityInfo = `用户自定义身份：${customIdentity}`;
-      } else {
-        const identityMap = [
-          { id: 0, name: '十八线小爱豆', emoji: '🎤' },
-          { id: 1, name: '职场小牛马', emoji: '💼' },
-          { id: 2, name: '复仇黑莲花', emoji: '🖤' },
-          { id: 3, name: '鸡排主理人', emoji: '🍗' },
-          { id: 4, name: '霸道豪门总裁', emoji: '💎' },
-          { id: 5, name: '玄学风水大师', emoji: '🔮' }
-        ];
-        const selected = identityMap.find(item => item.id === selectedIdentity);
-        identityInfo = `用户选择身份：${selected.emoji} ${selected.name}`;
-      }
-
-      // 模拟AI回复，实际项目中应该调用真实API
-      // 这里使用setTimeout来模拟网络请求延迟
-      setTimeout(() => {
-        const responseContent = `
-# 身份确认成功 🎉
-
-你现在的身份是：**${identityInfo}**
-
-## 接下来的故事将围绕你的身份展开
-
-准备好开始你的学习之旅了吗？
-        `;
-
-        setMessageList([{
-          content: responseContent,
-          role: 'assistant'
-        }]);
-        setStatus(3); // AI回复完成
-
-        // 开始倒计时
-        startCountdown();
-      }, 2000);
-
-    } catch (error) {
-      console.error('获取AI回复失败:', error);
-      setStatus(0);
-    }
-  };
-
-   // 初始化coze
+  // 初始化coze
   const initCoze = () => {
     if (!cozeRef.current) {
       cozeRef.current = new CozeAPI({
@@ -151,48 +195,48 @@ const About = () => {
     }
   };
 
-   // 创建会话
-    const createConversation = () => {
-        //@ts-nocheck
-        return new Promise(async (resolve, reject) => {
-            try {
-                console.log('开始创建会话，botId:', paper.botId);
-                const res = await cozeRef.current.conversations.create({
-                    bot_id: paper.botId,
-                });
-                console.log('创建会话响应:', res);
-                if (res?.id) {
-                    setConversationId(res.id);
-                    console.log('会话ID已设置:', res.id);
-                    resolve(1);
-                } else {
-                    console.error('会话创建失败，响应中没有ID');
-                    // message.error('服务异常');
-                    resolve(2);
-                }
-            } catch (error) {
-                console.error('创建会话时出错:', error);
-                // message.error('服务异常');
-                resolve(2);
-            }
+  // 创建会话
+  const createConversation = () => {
+    //@ts-nocheck
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log('开始创建会话，botId:', paper.botId);
+        const res = await cozeRef.current.conversations.create({
+          bot_id: paper.botId,
         });
-    };
+        console.log('创建会话响应:', res);
+        if (res?.id) {
+          setConversationId(res.id);
+          console.log('会话ID已设置:', res.id);
+          resolve(1);
+        } else {
+          console.error('会话创建失败，响应中没有ID');
+          // message.error('服务异常');
+          resolve(2);
+        }
+      } catch (error) {
+        console.error('创建会话时出错:', error);
+        // message.error('服务异常');
+        resolve(2);
+      }
+    });
+  };
 
-const streamChatApi = async (msg,again) => {
-   console.log('开始调用streamChatApi，会话ID:', conversationId);
+  const streamChatApi = async (msg, again) => {
+    console.log('开始调用streamChatApi，会话ID:', conversationId);
     // 正确获取finalContent，不需要再次trim，因为存储时已经格式化过了
     const finalContent = localStorage.getItem('finalContent') || '';
     try {
       controllerRef.current = new AbortController();
-      
+
       // 确保conversationId存在
-      console.log('conversationId',conversationId)
+      console.log('conversationId', conversationId)
       if (!conversationId) {
         console.error('会话ID不存在，无法发起请求');
         return;
       }
 
-      console.log('准备发送流式请求',`${identityInput.trim()}`);
+      console.log('准备发送流式请求', `${identityInput.trim()}`);
       await fetchEventSource(`https://api.coze.cn/v3/chat`, {
         method: 'POST',
         headers: {
@@ -212,9 +256,9 @@ const streamChatApi = async (msg,again) => {
           conversation_id: conversationId,
           additional_messages: [
             {
-              role: RoleType.User,
+              role: '878',
               content: `
-              # 场景设定
+              # 场景身份设定
                 ${localStorage.getItem('userIdentity') || ''}
               # ToDo list
               ${localStorage.getItem('finalContent') || ''}`,
@@ -235,13 +279,13 @@ const streamChatApi = async (msg,again) => {
         },
         onmessage(event) {
           console.log('收到消息事件:', event.type, '事件数据长度:', event.data.length);
-          
+
           try {
             const part = {
               ...event,
               data: JSON.parse(event.data),
             };
-            
+
             console.log('解析后的消息事件类型:', part.event);
 
             // 当前返回错误
@@ -262,7 +306,7 @@ const streamChatApi = async (msg,again) => {
               valueRef.current ? setStatus(1) : setStatus(0);
             }
 
-          if (
+            if (
               part.event === ChatEventType.CONVERSATION_CHAT_CREATED ||
               part.event === ChatEventType.CONVERSATION_MESSAGE_DELTA ||
               (part.event === ChatEventType.CONVERSATION_MESSAGE_COMPLETED && part.data.type === 'answer')
@@ -322,6 +366,7 @@ const streamChatApi = async (msg,again) => {
           // 不抛出错误，避免阻止后续操作
         },
         onclose() {
+          streamChatApi2();
           console.log('连接已关闭，检查是否有错误或取消操作');
         },
       });
@@ -409,7 +454,7 @@ const streamChatApi = async (msg,again) => {
   const handleTellButtonClick = () => {
     setStep('selectedIdentity');
   };
-  
+
 
   // 组件挂载时的初始化
   useEffect(() => {
@@ -438,21 +483,22 @@ const streamChatApi = async (msg,again) => {
     localStorage.setItem('isTaskListLocked', shouldLock.toString());
 
   }, []);
-  
-  // 监听messageList变化，当有内容时自动启用开始按钮
+
+  // 监听messageList变化，但不单独启用按钮
+  // 按钮启用逻辑现在仅在API调用成功后执行
   useEffect(() => {
-    if (messageList[0]?.content) {
-      setIsStartButtonDisabled(false);
-    }
+    // 不再单独根据messageList启用按钮
+    // 按钮将只在streamChatApi2函数中API调用成功后启用
   }, [messageList]);
 
   useEffect(() => {
     initCoze()
+    initCoze2()
   }, [])
 
 
 
-console.log('messageList',messageList)
+  console.log('messageList', messageList)
 
   return (
     <div className="page about-page">
@@ -784,7 +830,7 @@ console.log('messageList',messageList)
                             .map((task, index) => `${index + 1}，${task}`)
                             .join(' ');
                           localStorage.setItem('finalContent', formattedContent);
-                          
+
                           // 2. 然后执行身份确认和API调用
                           handleIdentityConfirm();
                         }}

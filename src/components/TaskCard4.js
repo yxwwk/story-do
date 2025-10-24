@@ -301,7 +301,7 @@ const TaskCard4 = ({ task, index, taskCount, dragState, toggleTaskCompletion, ha
             
             {/* 网络图片 */}
             <img 
-              src={getTaskImage()} 
+            src={`${task.image_url}`} 
               alt={`故事章节 ${task.text}`} 
               style={{
                 width: '100%',

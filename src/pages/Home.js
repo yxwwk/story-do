@@ -40,6 +40,8 @@ const Home = () => {
     botId: '7563851131408039946',
     accessToken: 'pat_t5xJCB10cSORLoDoW10doS6L6LGYmi6ubgQFeEfFwMbRfUABVn4QvmqFsAM4bJjY',
   });
+  const conversationId2 = localStorage.getItem('conversationId2')
+    const chat_id = localStorage.getItem('id2')
   // 定义任务数据，只包含id、文本和完成状态，坐标将在组件内部管理
   const [tasks, setTasks] = useState([
     {}
@@ -214,50 +216,51 @@ const Home = () => {
 
   // 初始化coze
   const initCoze = () => {
-    if (!cozeRef.current) {
-      cozeRef.current = new CozeAPI({
-        token: paper.accessToken,
-        baseURL: 'https://api.coze.cn',
-        allowPersonalAccessTokenInBrowser: true,
-      });
-      console.log('111113444')
-      createConversation();
-    }
+    
+
+      yu(conversationId2, chat_id);
+
+    // if (!cozeRef.current) {
+    //   cozeRef.current = new CozeAPI({
+    //     token: paper.accessToken,
+    //     baseURL: 'https://api.coze.cn',
+    //     allowPersonalAccessTokenInBrowser: true,
+    //   });
+    //   createConversation();
+    // }
   };
 
 
-  // 创建会话
-  const createConversation = () => {
-    console.log('4444444')
-    //@ts-nocheck
-    return new Promise(async (resolve, reject) => {
-      try {
-        console.log('7777', paper.botId)
-        const res = await cozeRef.current.conversations.create({
-          bot_id: paper.botId,
-        });
-        if (res?.id) {
-          setConversationId(res.id);
-          streamChatApi(res.id)
-          resolve(1);
-        } else {
-          // message.error('服务异常');
-          resolve(2);
-        }
-      } catch (error) {
-        // message.error('服务异常');
-        resolve(2);
-      }
-    });
-  };
+  // // 创建会话
+  // const createConversation = () => {
+  //   //@ts-nocheck
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const res = await cozeRef.current.conversations.create({
+  //         bot_id: paper.botId,
+  //       });
+  //       if (res?.id) {
+  //         setConversationId(res.id);
+  //         streamChatApi(res.id)
+  //         resolve(1);
+  //       } else {
+  //         // message.error('服务异常');
+  //         resolve(2);
+  //       }
+  //     } catch (error) {
+  //       // message.error('服务异常');
+  //       resolve(2);
+  //     }
+  //   });
+  // };
 
   const streamChatApi = async (id, again) => {
-    console.log('3444')
+    console.log('获取历史数据API', id, again)
     try {
       controllerRef.current = new AbortController();
 
       // 使用普通fetch请求替代fetchEventSource
-      const response = await fetch(`https://api.coze.cn/v3/chat?conversation_id=${id}`, {
+      const response = await fetch(`https://api.coze.cn/v3/chat/message/list?conversation_id=${localStorage.getItem('conversationId2')}}&chat_id=${localStorage('id2')}}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -270,13 +273,12 @@ const Home = () => {
           user_id: '4ff',
           additional_messages: [
             {
-              role: RoleType.User,
+              role: '878',
               content: `
               # 场景设定
-                ${userIdentity}
-             # ToDo list
-             ${finalContent}
-              `,
+                ${localStorage.getItem('userIdentity') || ''}
+              # ToDo list
+              ${localStorage.getItem('finalContent') || ''}`,
               content_type: 'text',
             },
           ],
@@ -294,7 +296,7 @@ const Home = () => {
       // 延迟10秒后调用yu函数
       setTimeout(() => {
         yu(responseData.data.conversation_id, responseData.data.id);
-      }, 15000);
+      }, 12000);
 
 
     } catch (error) {
@@ -302,74 +304,132 @@ const Home = () => {
       // handleError();
     }
   };
+
+  // 轮询计数器和定时器引用
+  const [pollCount, setPollCount] = useState(0);
+  const pollTimerRef = useRef(null);
 
   const yu = async (conversation_id, chat_id) => {
-    console.log('3444')
-    try {
-      controllerRef.current = new AbortController();
+    // 重置轮询计数器
+    setPollCount(0);
+    
+    // 执行轮询
+    const pollForData = async (count = 0) => {
+      try {
+        controllerRef.current = new AbortController();
 
-      // 使用普通fetch请求替代fetchEventSource
-      const response = await fetch(`https://api.coze.cn/v3/chat/message/list?conversation_id=${conversation_id}&chat_id=${chat_id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${paper.accessToken}`,
-        },
-        signal: controllerRef.current.signal,
-      });
+        // 使用普通fetch请求替代fetchEventSource
+        const response = await fetch(`https://api.coze.cn/v3/chat/message/list?conversation_id=${conversation_id}&chat_id=${chat_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${paper.accessToken}`,
+          },
+          signal: controllerRef.current.signal,
+        });
 
-      // 检查响应状态
-      if (!response.ok) {
-        throw new Error(`API请求失败: ${response.status}`);
-      }
-
-      // 解析响应数据
-      const responseData = await response.json();
-      console.log('API响应数据333:', responseData);
-      responseData.data.forEach(element => {
-        console.log('element33333333', element.type)
-        if (element.type === "tool_response") {
-          const parsedOutput = JSON.parse(JSON.parse(element.content).output);
-          console.log('99999element', parsedOutput);
-          setData(parsedOutput);
-
-          // 设置数据后1秒关闭loading
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000);
-
-          // 处理任务列表数据，添加isCompleted属性并映射ID
-          const processedTasks = parsedOutput.list.map(task => {
-            // ID映射逻辑：将数字ID转换为对应的字母ID格式
-            const idMap = {
-              1: 'aaaa',
-              2: 'bbbb',
-              3: 'cccc',
-              4: 'dddd',
-              5: 'eeee',
-              6: 'ffff',
-              7: 'gggg',
-              8: 'hhhh'
-            };
-
-            // 为每个任务添加isCompleted属性，并映射ID
-            return {
-              ...task,
-              id: idMap[task.id] || `task_${task.id}`, // 如果没有对应的映射，使用默认格式
-              isCompleted: false
-            };
-          });
-
-          setTasks(processedTasks);
-          console.log('处理后的任务列表:', processedTasks);
+        // 检查响应状态
+        if (!response.ok) {
+          throw new Error(`API请求失败: ${response.status}`);
         }
-      });
 
-    } catch (error) {
-      console.log('Error:', error);
-      // handleError();
-    }
+        // 解析响应数据
+        const responseData = await response.json();
+        console.log('-------API响应数据333------:', responseData.data);
+        console.log('当前轮询次数:', count);
+        
+        // 数据存在时处理数据
+        if (responseData.data && responseData.data.length) {
+          // 检查是否有type为answer的元素
+          const hasAnswerElement = responseData.data.some(element => element.type === "answer");
+          
+          if (!hasAnswerElement && count < 6) {
+            // 如果没有answer类型的元素且轮询次数小于6次，继续轮询
+            console.log('没有找到answer类型的元素，3秒后继续轮询...');
+            setPollCount(count + 1);
+            pollTimerRef.current = setTimeout(() => {
+              pollForData(count + 1);
+            }, 3000);
+            return; // 终止当前函数执行
+          } else {
+            // 处理数据
+            responseData.data.forEach(element => {
+              console.log('element33333333-------', element)
+              console.log('element33333333', element.type)
+              if (element.type === "answer") {
+                const parsedOutput = JSON.parse(element.content);
+                console.log('99999element', parsedOutput);
+                // setData(parsedOutput);
+
+                // 处理任务列表数据，添加isCompleted属性并映射ID
+                const processedTasks = parsedOutput.level_list.map(task => {
+                  // ID映射逻辑：将数字ID转换为对应的字母ID格式
+                  const idMap = {
+                    1: 'aaaa',
+                    2: 'bbbb',
+                    3: 'cccc',
+                    4: 'dddd',
+                    5: 'eeee',
+                    6: 'ffff',
+                    7: 'gggg',
+                    8: 'hhhh',
+                    9: 'iiii',
+                    10: 'jjjj',
+                  };
+
+                  // 确保idMap中有对应的映射，否则使用默认值
+                  const mappedId = idMap[task.id] || `task_${task.id}`;
+
+                  return {
+                  ...task,
+                    id: mappedId,
+                    isCompleted: false,
+                    image_url: task.image_url || parsedOutput.image_list[task.id-1] || '',
+                  };
+                });
+
+                setTasks(processedTasks);
+                setLoading(false);
+                console.log('处理后的任务列表:', processedTasks);
+              }
+            });
+          }
+        }
+        
+        // 当数据为空或已达到最大轮询次数时，关闭loading
+        if ((!responseData.data || !responseData.data.length) || 
+            (responseData.data && responseData.data.length && 
+             !responseData.data.some(element => element.type === "answer") && 
+             count >= 6)) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('轮询API时出错:', error);
+        // 如果发生错误且轮询次数小于6次，继续轮询
+        if (count < 8) {
+          console.log('发生错误，3秒后继续轮询...');
+          setPollCount(count + 1);
+          pollTimerRef.current = setTimeout(() => {
+            pollForData(count + 1);
+          }, 3000);
+        } else {
+          setLoading(false);
+        }
+      }
+    };
+    
+    // 开始第一次轮询
+    pollForData();
   };
+  
+  // 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      if (pollTimerRef.current) {
+        clearTimeout(pollTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     initCoze();
@@ -417,16 +477,16 @@ const Home = () => {
           }}>
             {/* 装饰性背景圆环 */}
             <svg width="100" height="100" viewBox="0 0 100 100" style={{ position: 'absolute' }}>
-              <circle 
-                cx="50" 
-                cy="50" 
-                r="45" 
-                fill="none" 
-                stroke="#e0e7ff" 
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="none"
+                stroke="#e0e7ff"
                 strokeWidth="4"
               />
             </svg>
-            
+
             {/* 主旋转动画 */}
             <svg style={{ animation: 'spin 2s linear infinite' }} width="80" height="80" viewBox="0 0 100 100">
               <defs>
@@ -435,16 +495,16 @@ const Home = () => {
                   <stop offset="100%" stopColor="#8b5cf6" />
                 </linearGradient>
               </defs>
-              <circle 
-                cx="50" 
-                cy="50" 
-                r="35" 
-                fill="none" 
-                stroke="url(#loadingGradient)" 
-                strokeWidth="5" 
-                strokeDasharray="130 40" 
-                strokeLinecap="round" 
-                strokeDashoffset="0" 
+              <circle
+                cx="50"
+                cy="50"
+                r="35"
+                fill="none"
+                stroke="url(#loadingGradient)"
+                strokeWidth="5"
+                strokeDasharray="130 40"
+                strokeLinecap="round"
+                strokeDashoffset="0"
                 style={{ filter: 'drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3))' }}
               />
               <style>{`
@@ -466,7 +526,7 @@ const Home = () => {
                 }
               `}</style>
             </svg>
-            
+
             {/* 中心点装饰 */}
             <div style={{
               position: 'absolute',
@@ -501,7 +561,7 @@ const Home = () => {
           }}>
             请稍候，精彩即将呈现 ✨
           </div>
-          
+
           {/* 装饰性粒子 */}
           <div style={{
             position: 'absolute',
