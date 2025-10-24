@@ -9,6 +9,7 @@ import '../pages/About.css';
 //23
 const About = () => {
   // 所有状态变量和useRef都在组件顶层作用域
+  const navigate = useNavigate();
   const [step, setStep] = useState('selectedIdentity'); // selectedIdentity, editor, initial - 现在身份选择在第一个
   const [editorContent, setEditorContent] = useState('');
   const [formattedTasks, setFormattedTasks] = useState([]);
@@ -33,12 +34,27 @@ const About = () => {
   const [countdown, setCountdown] = useState(5);
   const [hasCountdownStarted, setHasCountdownStarted] = useState(false);
 
+    const valueRef = useRef(null);
+    const cozeRef = useRef(null); // 扣子实例
+        const [conversationId, setConversationId] = useState(''); // 会话id
+    const errRef = useRef({
+        timer: null,
+        count: 0,
+    });
+
+
+  const [paper, setPaper] = useState({
+    botId: '7564251548717727787',
+    accessToken: 'pat_t5xJCB10cSORLoDoW10doS6L6LGYmi6ubgQFeEfFwMbRfUABVn4QvmqFsAM4bJjY',
+  });
+
+
   // 处理身份确认
   const handleIdentityConfirm = () => {
     // 保存选择的身份到localStorage
     if (selectedIdentity !== null) {
       localStorage.setItem('selectedIdentity', selectedIdentity.toString());
-      
+
       // 获取身份显示名称并更新userIdentity字段
       const identityMap = [
         { id: 0, name: '十八线小爱豆', emoji: '🎤' },
@@ -63,7 +79,7 @@ const About = () => {
     setShowModal(true);
 
     // 调用API获取回复
-    fetchAIResponse();
+    streamChatApi();
   };
 
   // 获取AI回复
@@ -123,6 +139,203 @@ const About = () => {
     }
   };
 
+   // 初始化coze
+  const initCoze = () => {
+    if (!cozeRef.current) {
+      cozeRef.current = new CozeAPI({
+        token: paper.accessToken,
+        baseURL: 'https://api.coze.cn',
+        allowPersonalAccessTokenInBrowser: true,
+      });
+      createConversation();
+    }
+  };
+
+   // 创建会话
+    const createConversation = () => {
+        //@ts-nocheck
+        return new Promise(async (resolve, reject) => {
+            try {
+                console.log('开始创建会话，botId:', paper.botId);
+                const res = await cozeRef.current.conversations.create({
+                    bot_id: paper.botId,
+                });
+                console.log('创建会话响应:', res);
+                if (res?.id) {
+                    setConversationId(res.id);
+                    console.log('会话ID已设置:', res.id);
+                    resolve(1);
+                } else {
+                    console.error('会话创建失败，响应中没有ID');
+                    // message.error('服务异常');
+                    resolve(2);
+                }
+            } catch (error) {
+                console.error('创建会话时出错:', error);
+                // message.error('服务异常');
+                resolve(2);
+            }
+        });
+    };
+
+const streamChatApi = async (msg,again) => {
+   console.log('开始调用streamChatApi，会话ID:', conversationId);
+    // 正确获取finalContent，不需要再次trim，因为存储时已经格式化过了
+    const finalContent = localStorage.getItem('finalContent') || '';
+    try {
+      controllerRef.current = new AbortController();
+      
+      // 确保conversationId存在
+      console.log('conversationId',conversationId)
+      if (!conversationId) {
+        console.error('会话ID不存在，无法发起请求');
+        return;
+      }
+
+      console.log('准备发送流式请求',`${identityInput.trim()}`);
+      await fetchEventSource(`https://api.coze.cn/v3/chat`, {
+        method: 'POST',
+        headers: {
+          // 'Content-Type': 'text/event-stream',
+          // 'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${paper.accessToken}`,
+        },
+        signal: controllerRef.current.signal,
+        openWhenHidden: true,
+        body: JSON.stringify({
+          stream: true,
+          bot_id: paper.botId,
+          user_id: '1234',
+          // conversation_id: conversationId,
+          conversation_id: conversationId,
+          additional_messages: [
+            {
+              role: RoleType.User,
+              content: `
+              # 场景设定
+                ${localStorage.getItem('userIdentity') || ''}
+              # ToDo list
+              ${localStorage.getItem('finalContent') || ''}`,
+              content_type: 'text',
+            },
+          ],
+          // extra_params:{
+          //  input_identity:'复仇黑莲花',
+          //  input_todo:'1、背50个单词 2、看1h托福课程视频3、做30道语法题 4、做一套托福试卷 5、进行一场口语模拟训练',
+          // }
+        }),
+        onopen(response) {
+          console.log('Connection opened! 响应状态:', response.status, '响应头:', response.headers.get('content-type'));
+          if (response.status !== 200) {
+            console.error('连接打开失败，状态码:', response.status);
+          }
+          return Promise.resolve();
+        },
+        onmessage(event) {
+          console.log('收到消息事件:', event.type, '事件数据长度:', event.data.length);
+          
+          try {
+            const part = {
+              ...event,
+              data: JSON.parse(event.data),
+            };
+            
+            console.log('解析后的消息事件类型:', part.event);
+
+            // 当前返回错误
+            if (part.event === ChatEventType.ERROR) {
+              console.error('收到错误事件:', part.data);
+              // handleError();
+              return;
+            }
+            // 当前创建好会话
+            if (part.event === ChatEventType.CONVERSATION_CHAT_CREATED) {
+              console.log('会话创建成功，会话ID:', part.data.conversation_id);
+              setConversationId(part.data.conversation_id);
+              setStatus(2);
+            }
+            // 当前会话完成
+            if (part.event === ChatEventType.DONE) {
+              console.log('会话完成');
+              valueRef.current ? setStatus(1) : setStatus(0);
+            }
+
+          if (
+              part.event === ChatEventType.CONVERSATION_CHAT_CREATED ||
+              part.event === ChatEventType.CONVERSATION_MESSAGE_DELTA ||
+              (part.event === ChatEventType.CONVERSATION_MESSAGE_COMPLETED && part.data.type === 'answer')
+            ) {
+              console.log('更新消息列表，事件类型:', part.event);
+              setMessageList((prev) => {
+                if (part.event === ChatEventType.CONVERSATION_CHAT_CREATED) {
+                  if (!again) {
+                    errRef.current = {
+                      count: 0,
+                      timer: null,
+                    };
+                  }
+                  return again && prev[prev.length - 1]?.type === 'answer'
+                    ? [
+                      ...prev.slice(0, -1),
+                      {
+                        ...part.data,
+                        type: 'answer',
+                        role: 'assistant',
+                        content: '',
+                        chat_id: part.data.chat_id || part.data.id,
+                        loading: true,
+                      },
+                    ]
+                    : [
+                      ...prev,
+                      {
+                        ...part.data,
+                        type: 'answer',
+                        role: 'assistant',
+                        content: '',
+                        chat_id: part.data.chat_id || part.data.id,
+                        loading: true,
+                      },
+                    ];
+                }
+                if (part.event === ChatEventType.CONVERSATION_MESSAGE_DELTA) {
+                  const newContent = prev[prev.length - 1].content + (part.data.content || '');
+                  console.log('收到消息增量，当前内容长度:', newContent.length);
+                  return [...prev.slice(0, -1), { ...prev[prev.length - 1], content: newContent }];
+                }
+                if (part.event === ChatEventType.CONVERSATION_MESSAGE_COMPLETED) {
+                  console.log('消息完成');
+                  return [...prev.slice(0, -1), { ...prev[prev.length - 1], loading: false }];
+                }
+                return prev;
+              });
+            }
+          } catch (parseError) {
+            console.error('解析消息事件数据失败:', parseError, '原始数据:', event.data);
+          }
+        },
+        onerror(error) {
+          // 避免在错误处理中再次尝试中止控制器，这可能导致额外错误
+          // handleError();
+          // 不抛出错误，避免阻止后续操作
+        },
+        onclose() {
+          console.log('连接已关闭，检查是否有错误或取消操作');
+        },
+      });
+    } catch (error) {
+      // 正确处理AbortError，这是用户主动取消请求时会产生的错误
+      if (error.name !== 'AbortError') {
+        // 只有非中止错误才需要处理
+        // handleError();
+      }
+    }
+  };
+
+
+
   // 开始倒计时
   const startCountdown = () => {
     if (!hasCountdownStarted) {
@@ -175,19 +388,19 @@ const About = () => {
       .split('\n')
       .map(line => line.trim())
       .filter(line => line.length > 0);
-    
+
     // 将新任务追加到现有任务列表中，避免覆盖快捷按钮添加的任务
     const updatedTasks = [...new Set([...formattedTasks, ...newTasks])];
-    
+
     // 设置更新后的任务列表
     setFormattedTasks(updatedTasks);
-    
+
     // 清空输入框
     setEditorContent('');
-    
+
     // 保存空的编辑器内容到localStorage
     localStorage.setItem('editorContent', '');
-    
+
     // 保存更新后的任务到localStorage
     localStorage.setItem('formattedTasks', JSON.stringify(updatedTasks));
   };
@@ -196,6 +409,7 @@ const About = () => {
   const handleTellButtonClick = () => {
     setStep('selectedIdentity');
   };
+  
 
   // 组件挂载时的初始化
   useEffect(() => {
@@ -204,7 +418,7 @@ const About = () => {
     if (savedContent) {
       setEditorContent(savedContent);
     }
-    
+
     // 从localStorage加载格式化后的任务列表
     const savedTasks = localStorage.getItem('formattedTasks');
     if (savedTasks) {
@@ -214,7 +428,7 @@ const About = () => {
         console.error('解析保存的任务列表失败:', error);
       }
     }
-    
+
     // 加载锁定状态，但默认应该是未锁定
     const savedLockedState = localStorage.getItem('isTaskListLocked');
     // 安全地处理锁定状态 - 只有当明确是'true'字符串时才锁定
@@ -222,7 +436,23 @@ const About = () => {
     setIsTaskListLocked(shouldLock);
     // 确保localStorage中的值是布尔字符串格式
     localStorage.setItem('isTaskListLocked', shouldLock.toString());
+
   }, []);
+  
+  // 监听messageList变化，当有内容时自动启用开始按钮
+  useEffect(() => {
+    if (messageList[0]?.content) {
+      setIsStartButtonDisabled(false);
+    }
+  }, [messageList]);
+
+  useEffect(() => {
+    initCoze()
+  }, [])
+
+
+
+console.log('messageList',messageList)
 
   return (
     <div className="page about-page">
@@ -380,7 +610,7 @@ const About = () => {
               <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          
+
           <div className="editor-header">
             <h2 className="editor-title">记录你的想法</h2>
             <p className="editor-subtitle">将你的计划和任务写下来，让小布为你创造精彩故事</p>
@@ -397,67 +627,67 @@ const About = () => {
           {/* 常驻的todo list - 优化样式 */}
           <div className="todo-list-container">
             <div className="todo-list inline-todo-list">
-                <div 
-                  className="todo-item" 
-                  onClick={() => {
-                    const task = '背50个单词';
-                    let newTasks;
-                    if (!formattedTasks.includes(task)) {
-                      // 如果任务不存在，则添加
-                      newTasks = [...formattedTasks, task];
-                    } else {
-                      // 如果任务已存在，则移除
-                      newTasks = formattedTasks.filter(t => t !== task);
-                    }
-                    setFormattedTasks(newTasks);
-                    localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
-                  }}
-                >
-                  <div className={`todo-checkbox ${formattedTasks.includes('背50个单词') ? 'checked' : ''}`}>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      {formattedTasks.includes('背50个单词') ? (
-                        <>
-                          <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
-                          <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </>
-                      ) : (
-                        <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
-                      )}
-                    </svg>
-                  </div>
-                  <span className="todo-text">背50个单词</span>
+              <div
+                className="todo-item"
+                onClick={() => {
+                  const task = '背50个单词';
+                  let newTasks;
+                  if (!formattedTasks.includes(task)) {
+                    // 如果任务不存在，则添加
+                    newTasks = [...formattedTasks, task];
+                  } else {
+                    // 如果任务已存在，则移除
+                    newTasks = formattedTasks.filter(t => t !== task);
+                  }
+                  setFormattedTasks(newTasks);
+                  localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                }}
+              >
+                <div className={`todo-checkbox ${formattedTasks.includes('背50个单词') ? 'checked' : ''}`}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    {formattedTasks.includes('背50个单词') ? (
+                      <>
+                        <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
+                        <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </>
+                    ) : (
+                      <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
+                    )}
+                  </svg>
                 </div>
-                <div 
-                  className="todo-item"
-                  onClick={() => {
-                    const task = '看1h托福课程视频';
-                    let newTasks;
-                    if (!formattedTasks.includes(task)) {
-                      // 如果任务不存在，则添加
-                      newTasks = [...formattedTasks, task];
-                    } else {
-                      // 如果任务已存在，则移除
-                      newTasks = formattedTasks.filter(t => t !== task);
-                    }
-                    setFormattedTasks(newTasks);
-                    localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
-                  }}
-                >
-                  <div className={`todo-checkbox ${formattedTasks.includes('看1h托福课程视频') ? 'checked' : ''}`}>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      {formattedTasks.includes('看1h托福课程视频') ? (
-                        <>
-                          <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
-                          <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </>
-                      ) : (
-                        <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
-                      )}
-                    </svg>
-                  </div>
-                  <span className="todo-text">看1h托福课程视频</span>
-                </div>
+                <span className="todo-text">背50个单词</span>
               </div>
+              <div
+                className="todo-item"
+                onClick={() => {
+                  const task = '看1h托福课程视频';
+                  let newTasks;
+                  if (!formattedTasks.includes(task)) {
+                    // 如果任务不存在，则添加
+                    newTasks = [...formattedTasks, task];
+                  } else {
+                    // 如果任务已存在，则移除
+                    newTasks = formattedTasks.filter(t => t !== task);
+                  }
+                  setFormattedTasks(newTasks);
+                  localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                }}
+              >
+                <div className={`todo-checkbox ${formattedTasks.includes('看1h托福课程视频') ? 'checked' : ''}`}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    {formattedTasks.includes('看1h托福课程视频') ? (
+                      <>
+                        <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
+                        <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </>
+                    ) : (
+                      <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
+                    )}
+                  </svg>
+                </div>
+                <span className="todo-text">看1h托福课程视频</span>
+              </div>
+            </div>
           </div>
 
           {/* 左右布局的主体内容和任务列表 */}
@@ -479,7 +709,7 @@ const About = () => {
                 />
                 {/* <p className="input-hint">💡 提示：每行输入一个任务，效果更佳</p> */}
               </div>
-              
+
               {/* 确定按钮 - 优化样式 */}
               <button
                 className={`confirm-button ${!editorContent.trim() ? 'disabled' : ''}`}
@@ -508,7 +738,7 @@ const About = () => {
                           {index + 1}
                         </div>
                         <span className="task-content">{task}</span>
-                        <button 
+                        <button
                           className="remove-task-btn"
                           onClick={(e) => {
                             e.stopPropagation(); // 阻止冒泡，避免触发父元素的点击事件
@@ -519,10 +749,10 @@ const About = () => {
                           aria-label="移除任务"
                         >
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M2 4H14" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
-                            <path d="M5 4V2C5 1.44772 5.44772 1 6 1H10C10.5523 1 11 1.44772 11 2V4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M8 8V12" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
-                            <path d="M5 12H11" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M2 4H14" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" />
+                            <path d="M5 4V2C5 1.44772 5.44772 1 6 1H10C10.5523 1 11 1.44772 11 2V4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M8 8V12" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" />
+                            <path d="M5 12H11" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
                         </button>
                       </div>
@@ -531,9 +761,9 @@ const About = () => {
                   <div className="list-footer">
                     <span className="task-count">共 {formattedTasks.length} 项任务</span>
                     <div className="list-actions">
-                
-                      <button 
-                        className="clear-tasks-btn" 
+
+                      <button
+                        className="clear-tasks-btn"
                         onClick={() => {
                           if (!isTaskListLocked) {
                             setFormattedTasks([]);
@@ -545,15 +775,23 @@ const About = () => {
                       >
                         清空清单
                       </button>
-                            <button 
+                      <button
                         className={`lock-tasks-btn ${isTaskListLocked ? 'locked' : ''}`}
                         onClick={() => {
-                            handleIdentityConfirm();
+                          // 1. 先格式化和保存任务清单
+                          console.log('formattedTasks', formattedTasks);
+                          const formattedContent = formattedTasks
+                            .map((task, index) => `${index + 1}，${task}`)
+                            .join(' ');
+                          localStorage.setItem('finalContent', formattedContent);
+                          
+                          // 2. 然后执行身份确认和API调用
+                          handleIdentityConfirm();
                         }}
-                      
+
                         title={isTaskListLocked ? "点击解锁任务清单，双击强制解锁" : "点击锁定任务清单"}
                       >
-                        锁定任务
+                        开启任务
                       </button>
                     </div>
                   </div>
@@ -576,7 +814,7 @@ const About = () => {
         <div className="modal-overlay identity-confirm-modal">
           <div className="modal-content">
             <div className="modal-header">
-              <h3 className="modal-title">身份确认中</h3>
+              <h3 className="modal-title">场景设定</h3>
             </div>
             {!messageList[0]?.content && (
               <div className="modal-body">
@@ -653,12 +891,12 @@ const About = () => {
                 }}
                 onClick={() => {
                   closeModal();
-                  // 关闭模态弹窗后切换到编辑器页面
-                  setStep('editor');
+                  // 关闭模态弹窗后跳转到Home页面
+                  navigate('/Home');
                 }}
                 disabled={isStartButtonDisabled}
               >
-                {!messageList[0]?.content ? '准备中' : (isStartButtonDisabled ? `${countdown}s...` : '开始学习')}
+                {!messageList[0]?.content ? '准备中' : '开始学习'}
               </button>
               <button
                 className="modal-button cancel"
