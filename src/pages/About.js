@@ -156,12 +156,12 @@ const About = () => {
 
       // 获取身份显示名称并更新userIdentity字段
       const identityMap = [
-        { id: 0, name: '十八线小爱豆', emoji: '🎤' },
-        { id: 1, name: '职场小牛马', emoji: '💼' },
-        { id: 2, name: '复仇黑莲花', emoji: '🖤' },
-        { id: 3, name: '鸡排主理人', emoji: '🍗' },
-        { id: 4, name: '霸道豪门总裁', emoji: '💎' },
-        { id: 5, name: '玄学风水大师', emoji: '🔮' }
+        { id: 0, name: '十八线小爱豆', emoji: '[表情]' },
+        { id: 1, name: '职场小牛马', emoji: '[表情]' },
+        { id: 2, name: '复仇黑莲花', emoji: '[表情]' },
+        { id: 3, name: '鸡排主理人', emoji: '[表情]' },
+        { id: 4, name: '霸道豪门总裁', emoji: '[表情]' },
+        { id: 5, name: '玄学风水大师', emoji: '[表情]' }
       ];
       const selected = identityMap.find(item => item.id === selectedIdentity);
       if (selected) {
@@ -265,10 +265,7 @@ const About = () => {
               content_type: 'text',
             },
           ],
-          // extra_params:{
-          //  input_identity:'复仇黑莲花',
-          //  input_todo:'1、背50个单词 2、看1h托福课程视频3、做30道语法题 4、做一套托福试卷 5、进行一场口语模拟训练',
-          // }
+       
         }),
         onopen(response) {
           console.log('Connection opened! 响应状态:', response.status, '响应头:', response.headers.get('content-type'));
@@ -528,19 +525,19 @@ const About = () => {
                 />
               </svg>
             </div>
-            <h2 className="intro-title">智演小布</h2>
+            <h2 className="intro-title">TaskStoryAI</h2>
             <p className="intro-subtitle">将平凡的任务，变成非凡的故事</p>
             <p className="intro-text">
-              不是冰冷的学习待办清单，而是为你量身定制故事的小布
+        不再枯燥的待办事项！TaskStoryAI 根据你的任务列表，智能生成富有故事背景和情感连接的任务描述，让你的每一天都充满意义和动力。
             </p>
-            <p className="intro-text">
+            {/* <p className="intro-text">
               我会根据您选定的身份和待办清单，通过AI智能构建多情节故事。在您完成对应情节的清单任务后，系统会解锁下一任务的故事，让学习打卡过程从机械罗列变为沉浸式故事解锁！
-            </p>
+            </p> */}
           </div>
 
           {/* 右侧身份选择区域 */}
           <div className="identity-selection-section">
-            <h2 className="identity-title">请选择你的今日身份</h2>
+            <h2 className="identity-title">请选择你的本次身份</h2>
             <div className="identity-options">
               {[0, 1, 2, 3, 4, 5].map((index) => (
                 <div
@@ -553,9 +550,9 @@ const About = () => {
                     setIdentityInput('');
                   }}
                 >
-                  <div className="identity-image" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '160px' }}>
+                  <div className="identity-image" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '140px', height: '140px' }}>
                     {/* 优化图片显示 */}
-                    <div style={{ width: '140px', height: '140px', overflow: 'hidden', borderRadius: '8px' }}>
+                    <div style={{ width: '100%', height: '100%', overflow: 'hidden', borderRadius: '8px' }}>
                       {index === 0 && <img
                         src='https://simg01.gaodunwangxiao.com/uploadimgs/tmp/upload/202510/22/60c86_20251022181516.png'
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -659,7 +656,7 @@ const About = () => {
 
           <div className="editor-header">
             <h2 className="editor-title">记录你的想法</h2>
-            <p className="editor-subtitle">将你的计划和任务写下来，让小布为你创造精彩故事</p>
+            <p className="editor-subtitle">将你的计划和任务写下来，让TaskStoryAI为你创造精彩故事</p>
           </div>
 
           {/* 身份展示卡片 */}
@@ -733,6 +730,66 @@ const About = () => {
                 </div>
                 <span className="todo-text">看1h托福课程视频</span>
               </div>
+              <div
+                className="todo-item"
+                onClick={() => {
+                  const task = '复盘错题，整理错题本';
+                  let newTasks;
+                  if (!formattedTasks.includes(task)) {
+                    // 如果任务不存在，则添加
+                    newTasks = [...formattedTasks, task];
+                  } else {
+                    // 如果任务已存在，则移除
+                    newTasks = formattedTasks.filter(t => t !== task);
+                  }
+                  setFormattedTasks(newTasks);
+                  localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                }}
+              >
+                <div className={`todo-checkbox ${formattedTasks.includes('复盘错题，整理错题本') ? 'checked' : ''}`}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    {formattedTasks.includes('复盘错题，整理错题本') ? (
+                      <>
+                        <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
+                        <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </>
+                    ) : (
+                      <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
+                    )}
+                  </svg>
+                </div>
+                <span className="todo-text">复盘错题，整理错题本</span>
+              </div>
+              <div
+                className="todo-item"
+                onClick={() => {
+                  const task = '学习1节拓展案例课';
+                  let newTasks;
+                  if (!formattedTasks.includes(task)) {
+                    // 如果任务不存在，则添加
+                    newTasks = [...formattedTasks, task];
+                  } else {
+                    // 如果任务已存在，则移除
+                    newTasks = formattedTasks.filter(t => t !== task);
+                  }
+                  setFormattedTasks(newTasks);
+                  localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                }}
+              >
+                <div className={`todo-checkbox ${formattedTasks.includes('学习1节拓展案例课') ? 'checked' : ''}`}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    {formattedTasks.includes('学习1节拓展案例课') ? (
+                      <>
+                        <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
+                        <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </>
+                    ) : (
+                      <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
+                    )}
+                  </svg>
+                </div>
+                <span className="todo-text">学习1节拓展案例课</span>
+              </div>
             </div>
           </div>
 
@@ -750,10 +807,10 @@ const About = () => {
                   className="task-textarea"
                   value={editorContent}
                   onChange={(e) => setEditorContent(e.target.value.slice(0, 500))}
-                  placeholder="1，输入你的任务2，发啥地方"
+                  placeholder="请输入你的待办"
                   rows={6}
                 />
-                {/* <p className="input-hint">💡 提示：每行输入一个任务，效果更佳</p> */}
+                {/* <p className="input-hint">[表情] 提示：每行输入一个任务，效果更佳</p> */}
               </div>
 
               {/* 确定按钮 - 优化样式 */}
@@ -762,10 +819,10 @@ const About = () => {
                 onClick={handleConfirmButtonClick}
                 disabled={!editorContent.trim()}
               >
-                确定
-                <svg width="20" height="20" viewBox="0 0 24 24" className="button-icon">
+                加入待办
+                {/* <svg width="20" height="20" viewBox="0 0 24 24" className="button-icon">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="white" />
-                </svg>
+                </svg> */}
               </button>
             </div>
 
@@ -774,7 +831,7 @@ const About = () => {
               {formattedTasks.length > 0 ? (
                 <div className="formatted-tasks-container animate-fadeIn">
                   <div className="section-header">
-                    <h3 className="formatted-tasks-title">你的任务清单</h3>
+                    <h3 className="formatted-tasks-title">待办</h3>
                     <span className="section-decoration"></span>
                   </div>
                   <div className="formatted-tasks">
@@ -805,10 +862,10 @@ const About = () => {
                     ))}
                   </div>
                   <div className="list-footer">
-                    <span className="task-count">共 {formattedTasks.length} 项任务</span>
+                    <span className="task-count"></span>
                     <div className="list-actions">
 
-                      <button
+                      {/* <button
                         className="clear-tasks-btn"
                         onClick={() => {
                           if (!isTaskListLocked) {
@@ -820,7 +877,7 @@ const About = () => {
                         title={isTaskListLocked ? "任务清单已锁定，无法清空" : "清空任务清单"}
                       >
                         清空清单
-                      </button>
+                      </button> */}
                       <button
                         className={`lock-tasks-btn ${isTaskListLocked ? 'locked' : ''}`}
                         onClick={() => {
@@ -837,15 +894,15 @@ const About = () => {
 
                         title={isTaskListLocked ? "点击解锁任务清单，双击强制解锁" : "点击锁定任务清单"}
                       >
-                        开启任务
+                        开启剧情
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="empty-task-list">
-                  <p className="empty-task-message">暂无任务清单</p>
-                  <p className="empty-task-hint">添加任务后将在此显示</p>
+                  <p className="empty-task-message">暂无待办清单</p>
+                  <p className="empty-task-hint">添加待办后将在此显示</p>
                 </div>
               )}
             </div>
@@ -906,12 +963,12 @@ const About = () => {
                         }
 
                         const identityMap = [
-                          { id: 0, name: '十八线小爱豆', emoji: '🎤' },
-                          { id: 1, name: '职场小牛马', emoji: '💼' },
-                          { id: 2, name: '复仇黑莲花', emoji: '🖤' },
-                          { id: 3, name: '鸡排主理人', emoji: '🍗' },
-                          { id: 4, name: '霸道豪门总裁', emoji: '💎' },
-                          { id: 5, name: '玄学风水大师', emoji: '🔮' }
+                          { id: 0, name: '十八线小爱豆', emoji: '[表情]' },
+                          { id: 1, name: '职场小牛马', emoji: '[表情]' },
+                          { id: 2, name: '复仇黑莲花', emoji: '[表情]' },
+                          { id: 3, name: '鸡排主理人', emoji: '[表情]' },
+                          { id: 4, name: '霸道豪门总裁', emoji: '[表情]' },
+                          { id: 5, name: '玄学风水大师', emoji: '[表情]' }
                         ];
 
                         const selected = identityMap.find(item => item.id === selectedIdentity);
@@ -928,23 +985,7 @@ const About = () => {
               </div>
             )}
             <div className="modal-footer">
-              <button
-                className={`modal-button confirm ${isStartButtonDisabled ? 'disabled' : ''}`}
-                style={{
-                  backgroundColor: isStartButtonDisabled ? '#ccc' : '',
-                  cursor: isStartButtonDisabled ? 'not-allowed' : 'pointer',
-                  opacity: isStartButtonDisabled ? 0.6 : 1
-                }}
-                onClick={() => {
-                  closeModal();
-                  // 关闭模态弹窗后跳转到Home页面
-                  navigate('/Home');
-                }}
-                disabled={isStartButtonDisabled}
-              >
-                {!messageList[0]?.content ? '准备中' : '开始学习'}
-              </button>
-              <button
+                 <button
                 className="modal-button cancel"
                 onClick={() => {
                   // 中止流式请求
@@ -969,8 +1010,25 @@ const About = () => {
                   setHasCountdownStarted(false);
                 }}
               >
-                取消
+                更换剧情
               </button>
+              <button
+                className={`modal-button confirm ${isStartButtonDisabled ? 'disabled' : ''}`}
+                style={{
+                  backgroundColor: isStartButtonDisabled ? '#ccc' : '',
+                  cursor: isStartButtonDisabled ? 'not-allowed' : 'pointer',
+                  opacity: isStartButtonDisabled ? 0.6 : 1
+                }}
+                onClick={() => {
+                  closeModal();
+                  // 关闭模态弹窗后跳转到Home页面
+                  navigate('/Home');
+                }}
+                disabled={isStartButtonDisabled}
+              >
+                {!messageList[0]?.content ? '准备中' : '开始'}
+              </button>
+           
             </div>
           </div>
         </div>

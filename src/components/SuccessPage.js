@@ -98,23 +98,13 @@ const SuccessPage = ({ tasks, onRestart }) => {
         <div className="completed-tasks">
           {tasks.map(task => (
             <div key={task.id} className="mini-task-card">
-              <div className="mini-task-image">
-                <svg viewBox="0 0 40 30" width="40" height="30">
-                  <polygon points="0,30 20,10 40,30" fill="#22c55e" />
-                  <polygon points="5,30 20,15 35,30" fill="#4ade80" />
-                </svg>
-                <div className="completion-check">
-                  <svg viewBox="0 0 20 20" width="20" height="20">
-                    <circle cx="10" cy="10" r="8" fill="#22c55e" />
-                    <path d="M5,10 L8,13 L15,6" stroke="white" strokeWidth="2" fill="none" />
-                  </svg>
-                </div>
-              </div>
+               <img style={{width: '40px', height: '40px'}} src='https://simg01.gaodunwangxiao.com/uploadimgs/tmp/upload/202510/24/8a2fc_20251024205309.png' />
+
               <div className="mini-task-text">{task.text}</div>
             </div>
           ))}
         </div>
-        
+      
         <div className="success-actions">
           <button 
             className="restart-button primary"
@@ -122,12 +112,12 @@ const SuccessPage = ({ tasks, onRestart }) => {
           >
             重新开始
           </button>
-          <button 
+          {/* <button 
             className="share-button"
             onClick={handleShare}
           >
             分享成就
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

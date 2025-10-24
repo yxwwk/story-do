@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FloatingBubble from '../FloatingBubble';
 import SnowEffect from '../SnowEffect';
 import SnowToggle from '../SnowToggle';
@@ -20,6 +21,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 const Home = () => {
   const [isSnowing, setIsSnowing] = useState(false); // 雪花状态，默认为关闭
+  const navigate = useNavigate();
   const cozeRef = useRef(null); // 扣子实例
   const [conversationId, setConversationId] = useState(''); // 会话id
   const valueRef = useRef(null);
@@ -210,7 +212,8 @@ const Home = () => {
 
   // 处理重新开始功能
   const handleRestart = () => {
-    setTasks(tasks.map(task => ({ ...task, isCompleted: false })));
+    // setTasks(tasks.map(task => ({ ...task, isCompleted: false })));
+    navigate('/');
   };
 
 
@@ -551,7 +554,7 @@ const Home = () => {
             animation: 'float 2s ease-in-out infinite',
             textShadow: '0 2px 4px rgba(30, 64, 175, 0.1)'
           }}>
-            魔法故事正在加载中...
+            剧情正在加载中...
           </div>
 
           {/* 加载提示 */}
