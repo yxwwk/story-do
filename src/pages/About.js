@@ -5,7 +5,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { MMarkdown } from '@myun/gimi-design';
 // import ShowMarkdown from '../components/show-markdown/markdown.js';
 import '../pages/About.css';
-import { replace } from 'react-router-dom';
+
 
 const About = () => {
   // 所有状态变量和useRef都在组件顶层作用域
