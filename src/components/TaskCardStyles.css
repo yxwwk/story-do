@@ -327,78 +327,81 @@
 .task-card-7 {
   width: 150px;
   height: 120px;
-  transform: rotate(-2deg);
-  transition: all 0.3s ease;
 }
 
-.task-card-7:hover {
-  transform: rotate(0deg) scale(1.05);
-}
-
-.task-card-7 .task-note {
-  background: #fffacd;
-  border: 1px solid #f7e8a4;
-  border-radius: 4px;
+.task-card-7 .task-card-modern {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  border-radius: 12px;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  padding: 16px 12px 12px 12px;
+  box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.task-card-7 .note-header {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8px;
+.task-card-7:hover .task-card-modern {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(168, 237, 234, 0.4);
 }
 
-.task-card-7 .note-pin {
-  width: 20px;
-  height: 12px;
-  background: #78350f;
-  border-radius: 50% 50% 0 0;
+.task-card-7 .task-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #6366f1;
 }
 
-.task-card-7 .note-content {
+.task-card-7 .task-indicator.completed {
+  background: #22c55e;
+}
+
+.task-card-7 .task-modern-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
+  padding: 16px;
   text-align: center;
+}
+
+.task-card-7 .task-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
 .task-card-7 .task-text {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: #374151;
-  margin-bottom: 8px;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
 }
 
-.task-card-7 .note-status {
-  font-size: 11px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 10px;
-  align-self: center;
+.task-card-7 .task-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  overflow: hidden;
 }
 
-.task-card-7 .note-status.pending {
-  background: #fde68a;
-  color: #92400e;
+.task-card-7 .progress-bar {
+  height: 100%;
+  background: #22c55e;
+  transition: width 0.3s ease;
 }
 
-.task-card-7 .note-status.completed {
-  background: #a7f3d0;
-  color: #065f46;
+.task-card-7 .progress-bar.100% {
+  width: 100%;
 }
 
-.task-card-7 .note-footer {
-  display: flex;
-  justify-content: center;
-  opacity: 0.5;
+.task-card-7 .progress-bar.0% {
+  width: 0%;
 }
+
+
 
 /* TaskCard8 样式 */
 .task-card-8 {
