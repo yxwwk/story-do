@@ -84,8 +84,8 @@ const PageIndex = () => {
                             <div class="flex items-center space-x-3">
                                 <img src="https://picsum.photos/id/1005/100/100" alt="用户头像" class="w-10 h-10 rounded-full" />
                                 <div>
-                                    <p class="text-sm opacity-90">你好，李明</p>
-                                    <p class="text-xs opacity-80">今天的冒险任务已准备就绪</p>
+                                    <p class="text-sm opacity-90 text-left">你好，高小吉</p>
+                                    <p class="text-xs opacity-80">冒险任务已准备就绪</p>
                                 </div>
                             </div>
                         </div>
@@ -153,7 +153,7 @@ const PageIndex = () => {
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <span class="inline-block px-3 py-1 text-xs font-semibold bg-indigo-100 text-primary rounded-full mb-4">核心功能</span>
-                <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold mb-6">让任务不再枯燥<br />让剧情激发动力</h2>
+                <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold mb-6">让任务不再枯燥<br/><div style={{marginTop: '10px'}}>让剧情激发动力</div></h2>
                 <p class="text-lg text-gray-600">TaskStoryAI 通过先进的人工智能技术，为你的每一个任务注入独特的故事背景和情感元素，让你在完成任务的过程中充满乐趣和动力。</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -208,7 +208,7 @@ const PageIndex = () => {
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <span class="inline-block px-3 py-1 text-xs font-semibold bg-indigo-100 text-primary rounded-full mb-4">简单三步</span>
-                <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold mb-6">轻松创建<br />带故事的任务列表</h2>
+                <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold mb-6">轻松创建<br /><div style={{marginTop: '10px'}}>带故事的任务列表</div></h2>
                 <p class="text-lg text-gray-600">无需复杂的设置，只需简单几步，就能让你的任务列表焕然一新，充满故事和动力。</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -252,7 +252,7 @@ const PageIndex = () => {
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <span class="inline-block px-3 py-1 text-xs font-semibold bg-indigo-100 text-primary rounded-full mb-4">适用场景</span>
-                <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold mb-6">为各种场景<br />带来全新体验</h2>
+                <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold mb-6">为各种场景<br /><div style={{marginTop: '10px'}}>带来全新体验</div> </h2>
                 <p class="text-lg text-gray-600">无论你是学生、职场人士还是家庭主妇，TaskStoryAI 都能为你的日常任务增添乐趣和动力。</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -312,7 +312,7 @@ const PageIndex = () => {
 
       <section id="call-to-action" class="py-20 bg-gradient-to-r from-primary to-secondary text-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-[clamp(2.5rem,5vw,4rem)] font-bold mb-6">准备好让你的任务列表<br />焕然一新了吗？</h2>
+            <h2 class="text-[clamp(2.5rem,5vw,4rem)] font-bold mb-6">准备好让你的任务列表<br /><div style={{marginTop: '10px'}}>焕然一新了吗？</div></h2>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
               
             </div>

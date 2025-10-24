@@ -214,6 +214,9 @@
 }
 
 .success-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 20px auto;
   animation: icon-pulse 2s infinite;
 }
