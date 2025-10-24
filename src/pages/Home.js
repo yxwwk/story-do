@@ -757,7 +757,7 @@ const Home = () => {
         </div>
       )}
 
-      {!allTasksCompleted && <FloatingBubble />}
+      {/* {!allTasksCompleted && <FloatingBubble />} */}
     </div>
   );
 };
