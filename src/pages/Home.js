@@ -213,7 +213,7 @@ const Home = () => {
   // 处理重新开始功能
   const handleRestart = () => {
     // setTasks(tasks.map(task => ({ ...task, isCompleted: false })));
-    navigate('/');
+    navigate('/about');
   };
 
 

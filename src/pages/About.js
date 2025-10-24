@@ -662,7 +662,7 @@ const About = () => {
           {/* 身份展示卡片 */}
           <div className="identity-card">
             <div className="identity-info">
-              <span className="identity-badge">今日身份</span>
+              <span className="identity-badge">本次身份</span>
               <span className="identity-name">{localStorage.getItem('userIdentity') || '未选择'}</span>
             </div>
           </div>
