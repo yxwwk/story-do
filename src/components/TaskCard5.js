@@ -303,8 +303,8 @@ function createConfetti() {
             ? '0 10px 30px rgba(139, 69, 19, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4) inset' 
             : '0 10px 30px rgba(139, 69, 19, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3) inset',
           border: `1px solid #d4c8a1`,
-          width: '240px',
-          height: '260px',
+          width: '290px',
+          height: '310px',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -377,7 +377,7 @@ function createConfetti() {
           
           {/* 网络图片 */}
           <img 
-            src={`${task.image_url}`} 
+            src={`${task.image_url}` || 'https://simg01.gaodunwangxiao.com/uploadimgs/tmp/upload/202510/24/0623d_20251024222010.png'} 
             alt={`故事章节 ${task.text}`} 
             style={{
               width: '100%',
