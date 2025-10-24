@@ -12,6 +12,7 @@ const About = () => {
   const [step, setStep] = useState('selectedIdentity'); // selectedIdentity, editor, initial - 现在身份选择在第一个
   const [editorContent, setEditorContent] = useState('');
   const [formattedTasks, setFormattedTasks] = useState([]);
+  const [isTaskListLocked, setIsTaskListLocked] = useState(false);
   const editorRef = useRef(null);
   const [selectedOption, setSelectedOption] = useState('');
   const [selectedIdentity, setSelectedIdentity] = useState(() => {
@@ -170,19 +171,25 @@ const About = () => {
   // 处理确认按钮点击
   const handleConfirmButtonClick = () => {
     // 将用户输入的内容按行分割，并过滤空行
-    const tasks = editorContent
+    const newTasks = editorContent
       .split('\n')
       .map(line => line.trim())
       .filter(line => line.length > 0);
     
-    // 设置格式化后的任务列表
-    setFormattedTasks(tasks);
+    // 将新任务追加到现有任务列表中，避免覆盖快捷按钮添加的任务
+    const updatedTasks = [...new Set([...formattedTasks, ...newTasks])];
     
-    // 保存编辑器内容到localStorage
-    localStorage.setItem('editorContent', editorContent);
+    // 设置更新后的任务列表
+    setFormattedTasks(updatedTasks);
     
-    // 保存格式化后的任务到localStorage
-    localStorage.setItem('formattedTasks', JSON.stringify(tasks));
+    // 清空输入框
+    setEditorContent('');
+    
+    // 保存空的编辑器内容到localStorage
+    localStorage.setItem('editorContent', '');
+    
+    // 保存更新后的任务到localStorage
+    localStorage.setItem('formattedTasks', JSON.stringify(updatedTasks));
   };
 
   // 处理告诉按钮点击
@@ -207,6 +214,14 @@ const About = () => {
         console.error('解析保存的任务列表失败:', error);
       }
     }
+    
+    // 加载锁定状态，但默认应该是未锁定
+    const savedLockedState = localStorage.getItem('isTaskListLocked');
+    // 安全地处理锁定状态 - 只有当明确是'true'字符串时才锁定
+    const shouldLock = savedLockedState === 'true';
+    setIsTaskListLocked(shouldLock);
+    // 确保localStorage中的值是布尔字符串格式
+    localStorage.setItem('isTaskListLocked', shouldLock.toString());
   }, []);
 
   return (
@@ -355,7 +370,7 @@ const About = () => {
 
 
       {step === 'editor' && (
-        <div className="content-container">
+        <div className="content-container editor-page">
           <button
             className="back-button"
             onClick={() => setStep('selectedIdentity')}
@@ -365,61 +380,192 @@ const About = () => {
               <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          
           <div className="editor-header">
             <h2 className="editor-title">记录你的想法</h2>
-            <p className="editor-subtitle">将你的计划和任务写下来</p>
+            <p className="editor-subtitle">将你的计划和任务写下来，让小布为你创造精彩故事</p>
           </div>
 
-          {/* 常驻的todo list */}
+          {/* 身份展示卡片 */}
+          <div className="identity-card">
+            <div className="identity-info">
+              <span className="identity-badge">今日身份</span>
+              <span className="identity-name">{localStorage.getItem('userIdentity') || '未选择'}</span>
+            </div>
+          </div>
+
+          {/* 常驻的todo list - 优化样式 */}
           <div className="todo-list-container">
-            <h3 className="todo-list-title">待办事项</h3>
-            <div className="todo-list">
-              <div className="todo-item">
-                <span className="todo-checkbox">□</span>
-                <span className="todo-text">背50个单词</span>
+            <div className="todo-list inline-todo-list">
+                <div 
+                  className="todo-item" 
+                  onClick={() => {
+                    const task = '背50个单词';
+                    let newTasks;
+                    if (!formattedTasks.includes(task)) {
+                      // 如果任务不存在，则添加
+                      newTasks = [...formattedTasks, task];
+                    } else {
+                      // 如果任务已存在，则移除
+                      newTasks = formattedTasks.filter(t => t !== task);
+                    }
+                    setFormattedTasks(newTasks);
+                    localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                  }}
+                >
+                  <div className={`todo-checkbox ${formattedTasks.includes('背50个单词') ? 'checked' : ''}`}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      {formattedTasks.includes('背50个单词') ? (
+                        <>
+                          <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
+                          <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </>
+                      ) : (
+                        <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
+                      )}
+                    </svg>
+                  </div>
+                  <span className="todo-text">背50个单词</span>
+                </div>
+                <div 
+                  className="todo-item"
+                  onClick={() => {
+                    const task = '看1h托福课程视频';
+                    let newTasks;
+                    if (!formattedTasks.includes(task)) {
+                      // 如果任务不存在，则添加
+                      newTasks = [...formattedTasks, task];
+                    } else {
+                      // 如果任务已存在，则移除
+                      newTasks = formattedTasks.filter(t => t !== task);
+                    }
+                    setFormattedTasks(newTasks);
+                    localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                  }}
+                >
+                  <div className={`todo-checkbox ${formattedTasks.includes('看1h托福课程视频') ? 'checked' : ''}`}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      {formattedTasks.includes('看1h托福课程视频') ? (
+                        <>
+                          <circle cx="10" cy="10" r="9" fill="#667eea" stroke="#667eea" strokeWidth="2" />
+                          <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </>
+                      ) : (
+                        <circle cx="10" cy="10" r="9" fill="white" stroke="#e0e0e0" strokeWidth="2" />
+                      )}
+                    </svg>
+                  </div>
+                  <span className="todo-text">看1h托福课程视频</span>
+                </div>
               </div>
-              <div className="todo-item">
-                <span className="todo-checkbox">□</span>
-                <span className="todo-text">看1h托福课程视频</span>
-              </div>
-            </div>
           </div>
 
-          {/* 替换为textarea */}
-          <textarea
-            className="task-textarea"
-            value={editorContent}
-            onChange={(e) => setEditorContent(e.target.value)}
-            placeholder="输入你的任务，每行一个..."
-            rows={6}
-          />
-
-          {/* 确定按钮 */}
-          <button
-            className="confirm-button"
-            onClick={handleConfirmButtonClick}
-            disabled={!editorContent.trim()}
-          >
-            确定
-            <svg width="20" height="20" viewBox="0 0 24 24" className="button-icon">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="white" />
-            </svg>
-          </button>
-
-          {/* 任务列表显示区域 */}
-          {formattedTasks.length > 0 && (
-            <div className="formatted-tasks-container">
-              <h3 className="formatted-tasks-title">你的任务清单</h3>
-              <div className="formatted-tasks">
-                {formattedTasks.map((task, index) => (
-                  <div key={index} className="formatted-task-item">
-                    <span className="task-number">{index + 1}.</span>
-                    <span className="task-content">{task}</span>
-                  </div>
-                ))}
+          {/* 左右布局的主体内容和任务列表 */}
+          <div className="main-content-wrapper">
+            {/* 左侧：输入区域和按钮 */}
+            <div className="left-panel">
+              <div className="input-section">
+                {/* <label htmlFor="task-textarea" className="input-label">
+                  输入你的任务
+                  <span className="character-count">{editorContent.length}/500</span>
+                </label> */}
+                <textarea
+                  id="task-textarea"
+                  className="task-textarea"
+                  value={editorContent}
+                  onChange={(e) => setEditorContent(e.target.value.slice(0, 500))}
+                  placeholder="1，输入你的任务2，发啥地方"
+                  rows={6}
+                />
+                {/* <p className="input-hint">💡 提示：每行输入一个任务，效果更佳</p> */}
               </div>
+              
+              {/* 确定按钮 - 优化样式 */}
+              <button
+                className={`confirm-button ${!editorContent.trim() ? 'disabled' : ''}`}
+                onClick={handleConfirmButtonClick}
+                disabled={!editorContent.trim()}
+              >
+                确定
+                <svg width="20" height="20" viewBox="0 0 24 24" className="button-icon">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="white" />
+                </svg>
+              </button>
             </div>
-          )}
+
+            {/* 右侧：任务列表显示区域 - 优化样式 */}
+            <div className="right-panel">
+              {formattedTasks.length > 0 ? (
+                <div className="formatted-tasks-container animate-fadeIn">
+                  <div className="section-header">
+                    <h3 className="formatted-tasks-title">你的任务清单</h3>
+                    <span className="section-decoration"></span>
+                  </div>
+                  <div className="formatted-tasks">
+                    {formattedTasks.map((task, index) => (
+                      <div key={index} className="formatted-task-item animate-slideIn">
+                        <div className="task-badge">
+                          {index + 1}
+                        </div>
+                        <span className="task-content">{task}</span>
+                        <button 
+                          className="remove-task-btn"
+                          onClick={(e) => {
+                            e.stopPropagation(); // 阻止冒泡，避免触发父元素的点击事件
+                            const newTasks = formattedTasks.filter((t, i) => i !== index);
+                            setFormattedTasks(newTasks);
+                            localStorage.setItem('formattedTasks', JSON.stringify(newTasks));
+                          }}
+                          aria-label="移除任务"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 4H14" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M5 4V2C5 1.44772 5.44772 1 6 1H10C10.5523 1 11 1.44772 11 2V4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M8 8V12" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M5 12H11" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="list-footer">
+                    <span className="task-count">共 {formattedTasks.length} 项任务</span>
+                    <div className="list-actions">
+                
+                      <button 
+                        className="clear-tasks-btn" 
+                        onClick={() => {
+                          if (!isTaskListLocked) {
+                            setFormattedTasks([]);
+                            localStorage.removeItem('formattedTasks');
+                          }
+                        }}
+                        disabled={isTaskListLocked}
+                        title={isTaskListLocked ? "任务清单已锁定，无法清空" : "清空任务清单"}
+                      >
+                        清空清单
+                      </button>
+                            <button 
+                        className={`lock-tasks-btn ${isTaskListLocked ? 'locked' : ''}`}
+                        onClick={() => {
+                            handleIdentityConfirm();
+                        }}
+                      
+                        title={isTaskListLocked ? "点击解锁任务清单，双击强制解锁" : "点击锁定任务清单"}
+                      >
+                        锁定任务
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-task-list">
+                  <p className="empty-task-message">暂无任务清单</p>
+                  <p className="empty-task-hint">添加任务后将在此显示</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
