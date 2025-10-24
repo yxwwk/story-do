@@ -1,107 +1,129 @@
 /* TaskCard2 样式 */
 .task-card-2 {
-  color: white;
-  border-radius: 12px;
-  padding: 16px;
   width: 150px;
   height: 120px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.task-card-2:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-.task-card-2 .task-header {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.task-card-2 .task-number {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
 }
 
-.task-card-2 .task-content {
-  flex: 1;
+.task-card-2 .task-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  border-radius: 20px;
+  padding: 16px;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+  transition: all 0.3s ease;
+}
+
+.task-card-2:hover .task-bubble {
+  transform: scale(1.05);
+}
+
+.task-card-2 .task-priority {
+  font-size: 18px;
+  margin-bottom: 4px;
 }
 
 .task-card-2 .task-text {
+  flex: 1;
   font-size: 14px;
   font-weight: 500;
-  margin-bottom: 8px;
+  color: #374151;
 }
 
-.task-card-2 .completion-badge {
-  background: rgba(255, 255, 255, 0.3);
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  align-self: flex-start;
+.task-card-2 .task-status {
+  font-size: 11px;
+  margin-top: 8px;
 }
 
-.task-card-2 .task-footer {
-  display: flex;
-  justify-content: flex-end;
-  color: rgba(255, 255, 255, 0.8);
+.task-card-2 .status-completed {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.task-card-2 .status-pending {
+  color: #f97316;
+  font-weight: 500;
+}
+
+.task-card-2 .task-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ff9a9e;
 }
 
 /* TaskCard3 样式 */
 .task-card-3 {
-  background: white;
-  border: 2px solid #6366f1;
-  border-radius: 16px;
-  padding: 20px;
   width: 150px;
   height: 120px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-  transition: all 0.3s ease;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
 }
 
-.task-card-3:hover {
-  border-color: #818cf8;
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+.task-card-3 .task-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  border-radius: 20px;
+  padding: 16px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+  transition: all 0.3s ease;
 }
 
-.task-card-3 .task-circle-icon {
-  margin-bottom: 10px;
+.task-card-3:hover .task-bubble {
+  transform: scale(1.05);
 }
 
-.task-card-3 .task-title {
-  font-size: 12px;
-  color: #6366f1;
+.task-card-3 .task-priority {
+  font-size: 18px;
   margin-bottom: 4px;
-  font-weight: 500;
 }
 
 .task-card-3 .task-text {
+  flex: 1;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
 }
 
-.task-card-3.task-completed {
-  border-color: #22c55e;
-  background: #f0fdf4;
+.task-card-3 .task-status {
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+.task-card-3 .status-completed {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.task-card-3 .status-pending {
+  color: #f97316;
+  font-weight: 500;
+}
+
+.task-card-3 .task-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ff9a9e;
 }
 
 /* TaskCard4 样式 */
