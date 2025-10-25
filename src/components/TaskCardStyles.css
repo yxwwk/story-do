@@ -338,13 +338,7 @@
   transition: width 0.3s ease;
 }
 
-.task-card-6 .progress-bar.100% {
-  width: 100%;
-}
 
-.task-card-6 .progress-bar.0% {
-  width: 0%;
-}
 
 /* TaskCard7 样式 */
 .task-card-7 {
@@ -416,13 +410,6 @@
   transition: width 0.3s ease;
 }
 
-.task-card-7 .progress-bar.100% {
-  width: 100%;
-}
-
-.task-card-7 .progress-bar.0% {
-  width: 0%;
-}
 
 
 
